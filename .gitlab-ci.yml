@@ -36,7 +36,6 @@ before_script:
 test:
   stage: test
   script:
-    - make run
     - make install
     - make setup
     - make check-deps
