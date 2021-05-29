@@ -23,11 +23,25 @@
 
 #lang racket/base
 
+(require
+ racket/contract
+ )
+
 (provide (all-defined-out))
 
 
-(define (make-separator num)
+(define/contract (make-separator num)
+  (-> integer? string?)
   (make-string num #\-)
   )
 
 (define separator (make-separator 25))
+
+
+(module+ test
+  (require rackunit)
+
+  (check-equal? (make-separator 0) "")
+  (check-equal? (make-separator 3) "---")
+  (check-equal? (make-separator 25) separator)
+  )
