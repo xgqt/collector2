@@ -25,16 +25,18 @@
 
 (require
  "private/collector2.rkt"
+ "private/common/counter.rkt"
  "private/common/separator.rkt"
  )
 
 
 (module+ main
+  (define cntr (counter))
   (hash-for-each produced-ebuilds
                  (lambda (p script)
                    (displayln separator)
-                   (displayln p)
-                   (displayln separator)
+                   (displayln (string-append "[" (cntr) "]: " p))
+                   (newline)
                    (displayln script)
                    (displayln separator)
                    )
