@@ -1,0 +1,52 @@
+---
+
+
+# This file is part of collector2.
+
+# collector2 is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# collector2 is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with collector2.  If not, see <https://www.gnu.org/licenses/>.
+
+# Copyright (c) 2021, src_prepare group
+# Licensed under the GNU GPL v3 License
+# SPDX-License-Identifier: GPL-3.0-only
+
+
+on: [push, pull_request]
+
+name: CI
+
+jobs:
+  build:
+    name: "Build on Racket '${{ matrix.racket-version }}' (${{ matrix.racket-variant }})"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        racket-version: ["stable", "current"]
+        racket-variant: ["BC", "CS"]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: Bogdanp/setup-racket@v0.12
+        with:
+          architecture: x64
+          distribution: full
+          variant: ${{ matrix.racket-variant }}
+          version: ${{ matrix.racket-version }}
+
+      - name: Installing collector2 and its dependencies
+        run: raco pkg install --no-docs --auto --name collector2
+
+      - name: Compiling collector2 and building its docs
+        run: raco setup --check-pkg-deps --unused-pkg-deps collector2
+
+      - name: Testing collector2
+        run: raco test -x -p collector2
