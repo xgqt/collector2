@@ -26,6 +26,7 @@
 (require
  racket/contract
  racket/set
+ racket/string
  "all.rkt"
  )
 
@@ -74,8 +75,7 @@
 ;;   )
 ;; (hash-remove-keys! all-pkgs-hash pkgs#main-distribution)
 
-#|
-;; Test: `filter-tag'
+#| Test: `filter-tag'
 (define test-hash #hash(["base"     . #hash([tags . ("main-distribution")])]
                         ["scribble" . #hash([tags . ("main-distribution")])]
                         ["custom0"  . #hash([tags . ("main-distribution")])]
@@ -92,17 +92,46 @@
 
 (define pkgs#main-distribution (filter-tag "main-distribution" all-pkgs-hash))
 
+
+(define arches
+  '(
+    "aarch64"
+    "i386"
+    "linux-natipkg"
+    "ppc"
+    "win32"
+    "x86-64"
+    "x86_64"
+    ))
+
+;; FIXME: better implementation of `pkg-for-arch?'
+
+(define/contract (pkg-for-arch? pkg)
+  (-> string? boolean?)
+  "Check if a PKG is meant for a specific platform."
+  (set-member?
+   (map (lambda (s) (string-contains? pkg (string-append "-" s)))
+        arches)
+   #t
+   )
+  )
+
+(define pkgs#platformed
+  (filter pkg-for-arch? (hash-keys all-pkgs-hash))
+  )
+
+
 (define/contract (hash-key-set-subtract hsh key lst)
-  (-> (and/c hash? immutable?) any/c (listof string?)
+  (-> (and/c hash? immutable?) any/c list?
       (and/c hash? immutable?))
-  "Execute `set-subtract', taking LST as second argument on the KEY of HSH."
-  (hash-update hsh key (λ (ds) (set-subtract ds lst)) '())
+  "Execute `set-subtract', taking LST as second argument, on the KEY of HSH."
+  (hash-update hsh key (lambda (ds) (set-subtract ds lst)) '())
   )
 
 (define/contract (hash-remove-dependencies hsh lst deps)
-  (-> (and/c hash? immutable?) list? (listof string?)
+  (-> (and/c hash? immutable?) list? list?
       (and/c hash? immutable?))
-  "Create a hash from HSH where keys from LST have DEPS subtracted."
+  "Create a hash from HSH where values of keys from LST have DEPS subtracted."
   (cond
     [(null? lst)  hsh]
     [else  (hash-remove-dependencies
@@ -116,15 +145,73 @@
     )
   )
 
-(define (hash-remove-main-distribution hsh)
+(define/contract (hash-purge-pkgs hsh lst)
+  (-> (and/c hash? immutable?) (listof string?)
+      (and/c hash? immutable?))
+  "Create a hash from HSH where packages matching a package name from LST
+   are removed from the HSH hash and from the dependencies list of
+   remaining packages."
   (let*
       (
-       [h  (hash-remove-keys hsh pkgs#main-distribution)]
+       [h  (hash-remove-keys hsh lst)]
        [hk (hash-keys h)]
        )
-    (hash-remove-dependencies h hk pkgs#main-distribution)
+    (hash-remove-dependencies h hk lst)
     )
   )
 
+;; "weak" - we don't check #:version or any other special conditions
+(define/contract (dependency-exists v pkgs)
+  (-> (or/c list? string?) (listof string?)
+      boolean?)
+  "Check if V exist in PKGS."
+  (cond
+    [(list? v)   (set-member? pkgs (car v))]
+    [(string? v) (set-member? pkgs v)]
+    )
+  )
+;; (dependency-exists "base" (hash-keys all-pkgs-hash))
 
-(define pkgs-hash (hash-remove-main-distribution all-pkgs-hash))
+(define/contract (missing-dependencies hsh)
+  (-> (and/c hash? immutable?) list?)
+  "Given HSH return a list of dependencies that do not exist in it."
+  (let
+      ([md '()])
+    (for
+        ([data (hash-values hsh)])
+      (for
+          ([dep (hash-ref data 'dependencies '())])
+        (when (not (dependency-exists dep (hash-keys hsh)))
+          (set! md (append md (list dep))))
+        )
+      )
+    md
+    )
+  )
+#| Check dependencies that list pkgs from main-distribution
+(missing-dependencies (hash-remove-main-distribution all-pkgs-hash))
+|#
+
+(define/contract (hash-remove-missing-dependencies hsh)
+  (-> (and/c hash? immutable?) (and/c hash? immutable?))
+  (hash-remove-dependencies hsh (hash-keys hsh) (missing-dependencies hsh))
+  )
+
+
+(define (hash-remove-main-distribution hsh)
+  (hash-purge-pkgs hsh pkgs#main-distribution)
+  )
+
+(define (hash-remove-platformed hsh)
+  (hash-purge-pkgs hsh pkgs#platformed)
+  )
+
+
+(define pkgs-hash
+  (hash-remove-missing-dependencies
+   (hash-remove-platformed
+    (hash-remove-main-distribution
+     all-pkgs-hash)
+    )
+   )
+  )
