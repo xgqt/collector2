@@ -35,11 +35,8 @@
  )
 
 
-;; 1st: gather all pkgs that have tag main dist   - pkgs#main-distribution
-;; 2nd: filter them from the hash                 - filter:main-dist
-;; 3rd: filter them from dependencies             - filter-data:main-dist
-
 ;; CONSIDER: Or maybe just skip missing dependencies?
+;; CONSIDER: `hash-update-each' functions
 
 
 (define/contract (filter-tag tag hsh)
@@ -65,6 +62,23 @@
     [else  (hash-remove-keys (hash-remove hsh (car lst)) (cdr lst))]
     )
   )
+
+(define/contract (hash-filter procedure hsh)
+  (-> procedure? (and/c hash? immutable?)
+      (and/c hash? immutable?))
+  (let
+      ([keys '()])
+    (hash-for-each
+     hsh
+     (lambda (key val)
+       (when (procedure val) (set! keys (append keys (list key))))
+       )
+     )
+    (hash-remove-keys hsh (set-subtract (hash-keys hsh) keys))
+    )
+  )
+;; (hash-filter hash? test-hash)
+;; (hash-filter (λ (h) (string-contains? (car (hash-ref h 'tags '(""))) "main")) test-hash)
 
 ;; With mutable hash:
 ;; (define/contract (hash-remove-keys! hsh lst)
@@ -207,11 +221,22 @@
   )
 
 
+(define/contract (hash-filter-source hsh str)
+  (-> (and/c hash? immutable?) string?
+      (and/c hash? immutable?))
+  (hash-filter
+   (lambda (h) (string-contains? (hash-ref h 'source "") str))
+   hsh
+   )
+  )
+
+
 (define pkgs-hash
   (hash-remove-missing-dependencies
    (hash-remove-platformed
     (hash-remove-main-distribution
-     all-pkgs-hash)
+     (hash-filter-source all-pkgs-hash "git")
+     )
     )
    )
   )
