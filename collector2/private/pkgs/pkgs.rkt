@@ -64,18 +64,13 @@
   )
 
 (define/contract (hash-filter procedure hsh)
-  (-> procedure? (and/c hash? immutable?)
+  (-> (-> any/c any/c) (and/c hash? immutable?)
       (and/c hash? immutable?))
-  (let
-      ([keys '()])
-    (hash-for-each
-     hsh
-     (lambda (key val)
-       (when (procedure val) (set! keys (append keys (list key))))
-       )
-     )
-    (hash-remove-keys hsh (set-subtract (hash-keys hsh) keys))
-    )
+  (hash-remove-keys
+   hsh
+   (filter (lambda (key) (not (procedure (hash-ref hsh key))))
+           (hash-keys hsh))
+   )
   )
 ;; (hash-filter hash? test-hash)
 ;; (hash-filter (λ (h) (string-contains? (car (hash-ref h 'tags '(""))) "main")) test-hash)
