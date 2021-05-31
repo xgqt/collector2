@@ -1,6 +1,14 @@
 # TODO
 
 
+## Alternative
+
+Better for implementing other ebuild generators?
+
+Racket:          pkgs-hash -> json
+Python/Anything: json      -> json-to-ebuild-converter
+
+
 ## Ebuild Generation
 
 ### Skip
