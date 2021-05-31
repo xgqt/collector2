@@ -191,7 +191,7 @@
       (for
           ([dep (hash-ref data 'dependencies '())])
         (when (not (dependency-exists dep (hash-keys hsh)))
-          (set! md (append md (list dep))))
+          (set! md (cons dep md)))
         )
       )
     md
