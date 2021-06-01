@@ -40,21 +40,22 @@
     )
   )
 
-(define/contract (hash-filter procedure hsh)
+(define/contract (hash-filter pred hsh)
   (-> (-> any/c any/c) (and/c hash? immutable?)
       (and/c hash? immutable?))
+  "Returns hash with the elements of HSH for which PRED produces a true value.
+   The PRED procedure is applied to values of keys in HSH."
   (hash-remove-keys
    hsh
-   (filter (lambda (key) (not (procedure (hash-ref hsh key))))
+   (filter (lambda (key) (not (pred (hash-ref hsh key))))
            (hash-keys hsh))
    )
   )
-;; (hash-filter hash? test-hash)
-;; (hash-filter (λ (h) (string-contains? (car (hash-ref h 'tags '(""))) "main")) test-hash)
 
 (define/contract (hash-key-set-subtract hsh key lst)
   (-> (and/c hash? immutable?) any/c list?
       (and/c hash? immutable?))
-  "Execute `set-subtract', taking LST as second argument, on the KEY of HSH."
+  "Execute `set-subtract', taking LST as second argument,
+   on the value of KEY from HSH hash."
   (hash-update hsh key (lambda (ds) (set-subtract ds lst)) '())
   )

@@ -33,31 +33,6 @@
  )
 
 
-;; With mutable hash:
-;; (define/contract (hash-remove-keys! hsh lst)
-;;   (-> (and/c hash? (not/c immutable?)) list? void)
-;;   (for ([key lst])
-;;     (hash-remove! hsh key)
-;;     )
-;;   )
-;; (hash-remove-keys! all-pkgs-hash pkgs#main-distribution)
-
-#| Test: `filter-tag'
-(define test-hash #hash(["base"     . #hash([tags . ("main-distribution")])]
-                        ["scribble" . #hash([tags . ("main-distribution")])]
-                        ["custom0"  . #hash([tags . ("main-distribution")])]
-                        ["custom1"  . #hash()]
-                        ["custom2"  . #hash([dependencies . ("base" "custom1")])]
-                        ))
-(filter-tag "main-distribution" test-hsh)
-(hash-update test-hash "custom1" (lambda (_) (list)))
-(hash-update (hash-ref test-hash "custom2")
-             'dependencies (lambda (ds) (set-subtract ds '("base"))))
-(hash-key-set-subtract (hash-ref test-hash "custom2") 'dependencies '("base"))
-(hash-remove-dependencies test-hash (hash-keys test-hash) '("base"))
-|#
-
-
 (define pkgs#main-distribution (filter-tag "main-distribution" all-pkgs-hash))
 
 (define pkgs#platformed
