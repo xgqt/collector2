@@ -9,6 +9,18 @@ Racket:          pkgs-hash -> json
 Python/Anything: json      -> json-to-ebuild-converter
 
 
+## CLI
+
+### Flags
+
+```shell
+    -d --directory  overlay directory
+    -o --overwrite  overwrite ebuild versions
+    -s --simulate   dry run; do not create files
+    -v --verbose    also display created ebuilds
+```
+
+
 ## Ebuild Generation
 
 ### Skip
