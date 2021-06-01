@@ -119,7 +119,6 @@
     )
   )
 
-;; "weak" - we don't check #:version or any other special conditions
 (define/contract (dependency-exists v pkgs)
   (-> (or/c list? string?) (listof string?)
       boolean?)
@@ -129,7 +128,6 @@
     [(string? v) (set-member? pkgs v)]
     )
   )
-;; (dependency-exists "base" (hash-keys all-pkgs-hash))
 
 (define/contract (missing-dependencies hsh)
   (-> (and/c hash? immutable?) list?)
@@ -147,9 +145,6 @@
     md
     )
   )
-#| Check dependencies that list pkgs from main-distribution
-(missing-dependencies (hash-remove-main-distribution all-pkgs-hash))
-|#
 
 (define/contract (hash-remove-missing-dependencies hsh)
   (-> (and/c hash? immutable?) (and/c hash? immutable?))

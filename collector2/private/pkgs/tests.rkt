@@ -31,13 +31,13 @@
 
 (define test-hash
   #hash(
-        ["custom0"  . #hash()]
+        ["custom0"  . #hash([source       . "https://gitlab.com/asd/custom0.git"])]
         ["custom1"  . #hash([tags         . ("main-distribution")])]
         ["custom2"  . #hash([dependencies . ("custom0" "custom1")]
                             [tags         . ("main-distribution")])]
         ["custom3"  . #hash([dependencies . ("custom2")])]
         ["custom4"  . #hash([dependencies . ("custom3")])]
-        ["custom5"  . #hash([dependencies . ("custom0" "custom5")])]
+        ["custom5"  . #hash([dependencies . ("custom0" "custom5" "none")])]
         )
   )
 
@@ -49,22 +49,43 @@
 (module+ test
   (require rackunit)
 
-  (check-equal?  (numkeys (hash-remove-keys test-hash '()))  6)
-  (check-equal?  (numkeys (hash-remove-keys test-hash '("custom0")))  5)
-  (check-equal?
+  (check-eq?  (numkeys (hash-remove-keys test-hash '()))  6)
+  (check-eq?  (numkeys (hash-remove-keys test-hash '("custom0")))  5)
+  (check-eq?
    (numkeys (hash-remove-keys test-hash '("custom0" "custom1" "custom2")))  3)
 
-  (check-equal?  (numkeys (hash-filter list? test-hash))  0)
-  (check-equal?  (numkeys (hash-filter hash? test-hash))  6)
-  (check-equal?
+  (check-eq?  (numkeys (hash-filter list? test-hash))  0)
+  (check-eq?  (numkeys (hash-filter hash? test-hash))  6)
+  (check-eq?
    (numkeys (hash-filter
-             (λ (h) (equal? (car (hash-ref h 'tags '(""))) "main-distribution"))
+             (lambda (h) (equal? (car (hash-ref h 'tags '(""))) "main-distribution"))
              test-hash))
    2)
 
   (check-equal?
-   (hash-key-set-subtract
-    (hash-ref test-hash "custom5") 'dependencies '("custom0"))
-   #hash([dependencies . ("custom5")])
-   )
+   (length (hash-ref
+            (hash-key-set-subtract (hash-ref test-hash "custom5")
+                                   'dependencies '("custom0")) 'dependencies))
+   2)
+
+  (check-eq?  (length (filter-tag "" test-hash))  0)
+  (check-eq?  (length (filter-tag "main-distribution" test-hash))  2)
+
+  (check-equal?  (numkeys (hash-filter-source test-hash ""))  6)
+  (check-equal?  (numkeys (hash-filter-source test-hash "gitlab"))  1)
+
+  (check-eq?  (numkeys (hash-purge-pkgs test-hash '()))  6)
+  (check-eq?
+   (numkeys (hash-purge-pkgs test-hash '("custom0" "custom1" "custom2")))
+   3)
+  (check-eq?  (numkeys (hash-purge-pkgs test-hash (hash-keys test-hash)))  0)
+
+  (check-eq?
+   (length (hash-ref (hash-ref (hash-remove-missing-dependencies test-hash)
+                               "custom5") 'dependencies))
+   2)
+
+  (check-eq?  (pkg-for-arch? "")  #f)
+  (check-eq?  (pkg-for-arch? "aarch64")  #f)
+  (check-eq?  (pkg-for-arch? "asd-aarch64")  #t)
   )
