@@ -85,7 +85,7 @@
                                "custom5") 'dependencies))
    2)
 
-  (check-eq?  (pkg-for-arch? "")  #f)
-  (check-eq?  (pkg-for-arch? "aarch64")  #f)
-  (check-eq?  (pkg-for-arch? "asd-aarch64")  #t)
+  (check-false  (pkg-for-arch? ""))
+  (check-false  (pkg-for-arch? "aarch64"))
+  (check-true  (pkg-for-arch? "asd-aarch64"))
   )

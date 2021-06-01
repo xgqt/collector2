@@ -76,14 +76,8 @@
    "asd-project/asd/asd"
    )
 
-  (check-equal?
-   (query-path "")
-   #f
-   )
-  (check-equal?
-   (query-path "https://github.com/asd-mirror/asd.git")
-   #f
-   )
+  (check-false  (query-path ""))
+  (check-false  (query-path "https://github.com/asd-mirror/asd.git"))
   (check-equal?
    (query-path "https://github.com/asd-mirror/asd.git?path=asd-lib")
    "asd-lib"
