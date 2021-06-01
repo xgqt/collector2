@@ -26,8 +26,22 @@
 
 (define collection '(collector2))
 
-;; FIXME: for now:
-(define test-omit-paths '("scribblings"))
+(define test-omit-paths
+  '(
+    ;; FIXME: for now, later when CLI interface is added use network only
+    ;;   when correct command-line options are passed in
+    "main.rkt"
+
+    ;; WORKAROUND: most of CI/CD do not have a WORKING network connection
+    ;;   or have it configured in a wrong way (wrong certs, etc.)
+    "private/collector2.rkt"
+    "private/pkgs/all.rkt"
+    "private/pkgs/pkgs.rkt"
+
+    ;; FIXME: testing scribbling is somehow broken
+    "scribblings"
+    )
+  )
 
 (define racket-launcher-names
   '("collector2")
