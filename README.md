@@ -1,6 +1,12 @@
 # collector2
 
 <p align="center">
+    <a href="http://pkgs.racket-lang.org/package/collector2">
+        <img src="https://img.shields.io/badge/raco_pkg_install-collector2-aa00ff.svg">
+    </a>
+    <a href="https://archive.softwareheritage.org/browse/origin/?origin_url=https://gitlab.com/src_prepare/collector2">
+        <img src="https://archive.softwareheritage.org/badge/origin/https://gitlab.com/src_prepare/collector2/">
+    </a>
     <a href="https://gitlab.com/src_prepare/collector2/pipelines">
         <img src="https://gitlab.com/src_prepare/collector2/badges/master/pipeline.svg">
     </a>
