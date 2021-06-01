@@ -40,6 +40,7 @@
 (module+ test
   (require rackunit)
 
+  (define c0 (counter))
   (define c1 (counter))
   (define c2 (counter 777))
   (void
@@ -47,6 +48,9 @@
    (c2) (c2) (c2)
    )
 
+  (check-true (procedure? counter))
+  (check-true (procedure? c0))
+  (check-equal? (c0) "1")
   (check-equal? (c1) "3")
   (check-equal? (c2) "781")
   )
