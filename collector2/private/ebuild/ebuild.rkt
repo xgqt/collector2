@@ -37,7 +37,7 @@
 
 (define/contract
   (ebuild pn        pv
-          gh_repo   gh_commit
+          gh_dom    gh_repo   gh_commit
           license   description
           #:req     [required_use #f]
           #:dep     [dependencies #f]
@@ -46,7 +46,7 @@
           )
   (->*   (
           string?   string?
-          string?   string?
+          string?   string?   string?
           string?   string?
           )
          (
@@ -83,7 +83,7 @@
 
      ;; gh variables
      "\n"
-     "GH_DOM=\"github.com\""                         "\n"
+     "GH_DOM=\""  gh_dom  "\""                       "\n"
      "GH_REPO=\"" gh_repo "\""                       "\n"
 
      ;; version
@@ -106,7 +106,7 @@
      "DESCRIPTION=\"" description "\""               "\n"
 
      ;; homepage
-     "HOMEPAGE=\"https://github.com/" gh_repo "\""   "\n"
+     "HOMEPAGE=\"https://" gh_dom "/" gh_repo "\""   "\n"
 
      ;; restrictions (remove later)
      "\n"

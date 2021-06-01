@@ -28,8 +28,9 @@
  )
 
 (provide
- string->repo
  query-path
+ string->repo
+ url-top
  )
 
 

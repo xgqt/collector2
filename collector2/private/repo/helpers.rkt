@@ -26,6 +26,7 @@
 (require
  net/url
  racket/contract
+ racket/string
  )
 
 (provide (all-defined-out))
@@ -59,6 +60,20 @@
    str
    (path->string (url->path (string->url str)))
    )
+  )
+
+(define/contract (url-top str)
+  (-> string? string?)
+  (let*
+      (
+       [u    (string->url str)]
+       [uu   (url-user u)]
+       [uh   (url-host u)]
+       [_up  (url-port u)]
+       [up   (if (integer? _up) (number->string _up) #f)]
+       )
+      (string-join (filter string? (list uu uh up)) "@" #:before-last ":")
+    )
   )
 
 (define/contract (get-branch str)

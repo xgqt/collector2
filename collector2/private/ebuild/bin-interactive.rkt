@@ -51,7 +51,10 @@
     (begin (display "Package version\nPV= ... ")
            (read-line))
 
-    (begin (display "GitHub repository\nGH_REPO= ... ")
+    (begin (display "Git domain\nGH_DOM= ... ")
+           (read-line))
+
+    (begin (display "Git repository\nGH_REPO= ... ")
            (read-line))
 
     (begin (display "Commit hash\nGH_COMMIT ... ")

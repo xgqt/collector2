@@ -60,6 +60,7 @@
        [pv          (epoch->pv (hash-ref data 'last-updated 0))]
        [p           (string-append name "-" pv)]
        [src         (hash-ref data 'source "")]
+       [gh_dom      (url-top src)]
        [gh_repo     (string->repo src)]
        [gh_commit   (hash-ref data 'checksum "")]
        [description (make-valid-description name (hash-ref data 'description ""))]
@@ -69,7 +70,7 @@
     (cons
      p
      (ebuild pn pv
-             gh_repo gh_commit
+             gh_dom gh_repo gh_commit
              "all-rights-reserved"  ; license placeholder
              description
              #:dep depend
