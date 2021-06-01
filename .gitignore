@@ -35,5 +35,6 @@
 [._]sw[a-p]
 \#*
 
+/bin/
 compiled/
 doc/
