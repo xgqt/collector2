@@ -36,7 +36,7 @@
   (define cntr (counter))
 
   (hash-for-each
-   all-pkgs-hash
+   (all-pkgs)
    (lambda (name data)
      (displayln (string-append separator             "\n"
                                "number: " (cntr)     "\n"

@@ -32,7 +32,7 @@
 
   (define cntr (counter))
 
-  (for ([name (sort (hash-keys all-pkgs-hash) string<?)])
+  (for ([name (sort (hash-keys (all-pkgs)) string<?)])
     (displayln (string-append (cntr) ": " name))
     )
   )

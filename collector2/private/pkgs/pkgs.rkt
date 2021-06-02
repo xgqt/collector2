@@ -29,32 +29,31 @@
  )
 
 (provide
- pkgs-hash
+ pkgs
  )
 
 
-(define pkgs#main-distribution (filter-tag "main-distribution" all-pkgs-hash))
-
-(define pkgs#platformed
-  (filter pkg-for-arch? (hash-keys all-pkgs-hash))
-  )
-
-
-(define (hash-remove-main-distribution hsh)
-  (hash-purge-pkgs hsh pkgs#main-distribution)
-  )
-
-(define (hash-remove-platformed hsh)
-  (hash-purge-pkgs hsh pkgs#platformed)
-  )
-
-
-(define pkgs-hash
-  (hash-remove-missing-dependencies
-   (hash-remove-platformed
-    (hash-remove-main-distribution
-     (hash-filter-source all-pkgs-hash "git")
+(define (pkgs)
+  (let*
+      (
+       [all-pkgs-hash           (all-pkgs)]
+       [pkgs#main-distribution  (filter-tag "main-distribution" all-pkgs-hash)]
+       [pkgs#platformed         (filter pkg-for-arch? (hash-keys all-pkgs-hash))]
+       [hash-remove-main-distribution
+        (lambda (hsh)
+          (hash-purge-pkgs hsh pkgs#main-distribution))
+        ]
+       [hash-remove-platformed
+        (lambda (hsh)
+          (hash-purge-pkgs hsh pkgs#platformed))
+        ]
+       )
+    (hash-remove-missing-dependencies
+     (hash-remove-platformed
+      (hash-remove-main-distribution
+       (hash-filter-source all-pkgs-hash "git")
+       )
+      )
      )
     )
-   )
   )

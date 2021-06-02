@@ -81,10 +81,10 @@
   )
 
 
-(define produced-ebuilds
+(define (produced-ebuilds)
   (make-hash
    ;; NOTICE: map produces a list
-   (hash-map pkgs-hash
+   (hash-map (pkgs)
              (lambda (name data) (data->ebuild name data)))
    )
   )

@@ -34,8 +34,8 @@
  )
 
 
-(define/contract all-pkgs-hash
-  hash?
+(define/contract (all-pkgs)
+  (-> hash?)
   (parameterize
       ([current-pkg-catalogs
         (list (string->url "https://pkgs.racket-lang.org/"))

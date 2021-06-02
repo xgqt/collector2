@@ -23,22 +23,44 @@
 
 #lang racket/base
 
+
 (require
+ racket/cmdline
  "private/collector2.rkt"
  "private/common/counter.rkt"
  "private/common/separator.rkt"
  )
 
 
+(define (dump-all)
+  (let
+      ([cntr (counter)])
+    (hash-for-each
+     (produced-ebuilds)
+     (lambda (p script)
+       (displayln separator)
+       (displayln (string-append "[" (cntr) "]: " p))
+       (newline)
+       (displayln script)
+       (displayln separator)
+       )
+     )
+    )
+  )
+
+
 (module+ main
-  (define cntr (counter))
-  (hash-for-each produced-ebuilds
-                 (lambda (p script)
-                   (displayln separator)
-                   (displayln (string-append "[" (cntr) "]: " p))
-                   (newline)
-                   (displayln script)
-                   (displayln separator)
-                   )
-                 )
+
+  (command-line
+   #:program "collector2"
+
+   #:once-each
+   [("-d" "--dump-all")  "Dump ebuilds to stdout"
+                         (dump-all)
+                         ]
+
+   #:ps
+   "Copyright (c) 2021, src_prepare group"
+   "Licensed under the GNU GPL v3 License"
+   )
   )
