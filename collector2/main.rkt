@@ -55,7 +55,7 @@
   )
 
 
-(define (create-all root #:verbose [verbose #f])
+(define (create-all [root "."] #:verbose [verbose #f])
   "Create ebuilds in the given location PATH."
   (let*
       (
