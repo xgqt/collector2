@@ -9,6 +9,13 @@ Racket:          pkgs-hash -> json
 Python/Anything: json      -> json-to-ebuild-converter
 
 
+## Net
+
+report+error:
+- if network is inaccessible ?
+- if we get a empty hash
+
+
 ## Ebuild Generation
 
 ### Skip
