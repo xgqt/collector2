@@ -26,6 +26,7 @@
 
 (require
  racket/cmdline
+ racket/file
  "private/collector2.rkt"
  "private/common/counter.rkt"
  "private/common/separator.rkt"
@@ -37,12 +38,54 @@
       ([cntr (counter)])
     (hash-for-each
      (produced-ebuilds)
-     (lambda (p script)
-       (displayln separator)
-       (displayln (string-append "[" (cntr) "]: " p))
-       (newline)
-       (displayln script)
-       (displayln separator)
+     (lambda (pn hsh)
+       (hash-for-each
+        hsh
+        (lambda (pv script)
+          (displayln separator)
+          (displayln (string-append "[" (cntr) "]: " pn " - " pv))
+          (newline)
+          (displayln script)
+          (displayln separator)
+          )
+        )
+       )
+     )
+    )
+  )
+
+
+;; STUB
+;; -c ? --update ?
+;; -c --create PATH
+(define (create-all root #:verbose [verbose #f])
+  "Create ebuilds in the given location PATH."
+  (let*
+      (
+       [base (build-path root "dev-racket")]
+       [cntr (counter -1)]
+       )
+    (make-directory* base)
+    (hash-for-each
+     (produced-ebuilds)
+     (lambda (pn hsh)
+       (make-directory* (build-path base pn))
+       (hash-for-each
+        hsh
+        (lambda (pv script)
+          (display-to-file
+           script (build-path base pn (string-append pn "-" pv ".ebuild"))
+           #:exists 'replace
+           )
+          (when verbose
+            (displayln (string-append
+                        "Generated "
+                        "[" (cntr) "]: " pn " - " pv
+                        " in " (path->string (build-path base pn))
+                        ))
+            )
+          )
+        )
        )
      )
     )
@@ -51,13 +94,31 @@
 
 (module+ main
 
+  (define create-all-directory-root (make-parameter (current-directory)))
+  (define verbose (make-parameter #f))
+
   (command-line
    #:program "collector2"
 
    #:once-each
-   [("-d" "--dump-all")  "Dump ebuilds to stdout"
-                         (dump-all)
-                         ]
+   [("-C" "--create-all-directory") create-all-directory
+    "Set the directory for `create-all'"
+    (create-all-directory-root create-all-directory)
+    ]
+   [("-v" "--verose")
+    "Increate verbosity"
+    (verbose #t)
+    ]
+
+   #:once-any
+   [("-d" "--dump-all")
+    "Dump ebuilds to stdout"
+    (dump-all)
+    ]
+   [("-c" "--create-all")
+    "Create ebuilds in a DIR"
+    (create-all (create-all-directory-root) #:verbose (verbose))
+    ]
 
    #:ps
    "Copyright (c) 2021, src_prepare group"

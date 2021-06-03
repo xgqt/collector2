@@ -53,7 +53,7 @@
 ;;       (also maybe add ebuild-data-validate)
 
 (define/contract (data->ebuild name data)
-  (-> string? hash? pair?)
+  (-> string? hash? hash?)
   (let*
       (
        [pn          name]
@@ -67,15 +67,18 @@
        [depend      (hash-ref data 'dependencies #f)]
        [path        (query-path src)]
        )
-    (cons
-     p
-     (ebuild pn pv
-             gh_dom gh_repo gh_commit
-             "all-rights-reserved"  ; license placeholder
-             description
-             #:dep depend
-             #:+dir path
-             )
+    (make-hash
+     (list
+      (cons pv
+            (ebuild pn pv
+                    gh_dom gh_repo gh_commit
+                    "all-rights-reserved"  ; license placeholder
+                    description
+                    #:dep depend
+                    #:+dir path
+                    )
+            )
+      )
      )
     )
   )
@@ -85,6 +88,6 @@
   (make-hash
    ;; NOTICE: map produces a list
    (hash-map (pkgs)
-             (lambda (name data) (data->ebuild name data)))
+             (lambda (name data) (cons name (data->ebuild name data))))
    )
   )
