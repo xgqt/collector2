@@ -55,9 +55,6 @@
   )
 
 
-;; STUB
-;; -c ? --update ?
-;; -c --create PATH
 (define (create-all root #:verbose [verbose #f])
   "Create ebuilds in the given location PATH."
   (let*
@@ -101,7 +98,8 @@
    #:program "collector2"
 
    #:once-each
-   [("-C" "--create-all-directory") create-all-directory
+   [("-C" "--create-all-directory")
+    create-all-directory
     "Set the directory for `create-all'"
     (create-all-directory-root create-all-directory)
     ]
