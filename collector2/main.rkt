@@ -70,16 +70,18 @@
        (hash-for-each
         hsh
         (lambda (pv script)
-          (display-to-file
-           script (build-path base pn (string-append pn "-" pv ".ebuild"))
-           #:exists 'replace
-           )
-          (when verbose
-            (displayln (string-append
-                        "Generated "
-                        "[" (cntr) "]: " pn " - " pv
-                        " in " (path->string (build-path base pn))
-                        ))
+          (let
+              ([file-path
+                (build-path base pn (string-append pn "-" pv ".ebuild"))
+                ])
+            (display-to-file script file-path #:exists 'replace)
+            (when verbose
+              (displayln (string-append
+                          "Generated "
+                          "[" (cntr) "]: " pn " - " pv
+                          " in " (path->string file-path)
+                          ))
+              )
             )
           )
         )
