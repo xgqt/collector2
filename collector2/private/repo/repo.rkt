@@ -34,12 +34,21 @@
  )
 
 
+(define banned
+  '(
+    "/." "/" ".git"
+    ;; WORKAROUND: caused by malformed URL:
+    "main" "master" "stable"
+    "/no-deps" "/pre-6" "/for-v5.3.6"
+    )
+  )
+
 (define/contract (string->repo str)
   (-> string? string?)
   "Trim disallowed elements from `url-path' of given STR."
   (empty:empty-else
    str
-   (remove-branch (trim (url-path str) '(".git" "/." "/" "/master" "/main")))
+   (remove-branch (trim (url-path str) banned))
    )
   )
 
