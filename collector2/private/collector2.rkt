@@ -25,6 +25,7 @@
 
 (require
  racket/contract
+ racket/string
  "common/epoch.rkt"
  "ebuild/ebuild.rkt"
  "pkgs/pkgs.rkt"
@@ -36,18 +37,36 @@
  )
 
 
-;; TODO:
-;; data->ebuild-variables
-;; data->ebuild
+;; asd-9 is a invalid name
+;; WORKAROUND: asd-9 -> asd9
+(define/contract (make-valid-name name)
+  (-> string? string?)
+  (let
+      (
+       [mname name]
+       [invalid-numbers (regexp-match* #rx"-[0-9]" name)]
+       )
+    (for ([in invalid-numbers])
+      ;; FIXME: regex ?
+      (set! mname (string-replace mname in (string-trim in "-")))
+      )
+    (string-downcase mname)
+    )
+  )
 
 (define/contract (make-valid-description name description)
   (-> string? string? string?)
-  (if (equal? "" description)
+  (if (or (equal? "" description) (> (string-length description) 79))
       (string-append "the " name " Racket package")
-      description
+      ;; replace: `, ", \n, \r (^M)
+      (regexp-replace* #rx"[`\"\n\r]" description "")
       )
   )
 
+
+;; TODO:
+;;   - data->ebuild-variables
+;;   - data->ebuild
 
 ;; TODO: only pass src_uri and let ebuild do the rest
 ;;       (also maybe add ebuild-data-validate)
@@ -89,7 +108,7 @@
    ;; NOTICE: map produces a list
    (hash-map (pkgs)
              (lambda (name data)
-               (cons (string-downcase name) (data->ebuild name data)))
+               (cons (make-valid-name name) (data->ebuild name data)))
              )
    )
   )
