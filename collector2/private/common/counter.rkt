@@ -28,11 +28,16 @@
 
 (define (counter [start-val 0])
   (define val start-val)
-  (lambda ()
-    (set! val (+ 1 val))
+  (lambda (#:display [display-only #f] #:number [as-number #f])
+    (when (not display-only)
+      (set! val (+ 1 val))
+      )
     ;; convert to string just because it is common
     ;; in this project to do `string-append'
-    (number->string val)
+    (if as-number
+        val
+        (number->string val)
+     )
     )
   )
 
@@ -51,6 +56,12 @@
   (check-true (procedure? counter))
   (check-true (procedure? c0))
   (check-equal? (c0) "1")
+  (check-equal? (c0 #:display #t) "1")
+  (check-equal? (c0 #:display #t #:number #t) 1)
   (check-equal? (c1) "3")
+  (check-equal? (c1 #:display #t) "3")
+  (check-equal? (c1 #:display #t #:number #t) 3)
   (check-equal? (c2) "781")
+  (check-equal? (c2 #:display #t) "781")
+  (check-equal? (c2 #:display #t #:number #t) 781)
   )
