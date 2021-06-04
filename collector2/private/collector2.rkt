@@ -88,6 +88,8 @@
   (make-hash
    ;; NOTICE: map produces a list
    (hash-map (pkgs)
-             (lambda (name data) (cons name (data->ebuild name data))))
+             (lambda (name data)
+               (cons (string-downcase name) (data->ebuild name data)))
+             )
    )
   )
