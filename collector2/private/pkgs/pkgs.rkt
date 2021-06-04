@@ -48,10 +48,12 @@
           (hash-purge-pkgs hsh pkgs#platformed))
         ]
        )
-    (hash-remove-missing-dependencies
-     (hash-remove-platformed
-      (hash-remove-main-distribution
-       (hash-filter-source all-pkgs-hash "git")
+    (hash-filter-build-success
+     (hash-remove-missing-dependencies
+      (hash-remove-platformed
+       (hash-remove-main-distribution
+        (hash-filter-source all-pkgs-hash "git")
+        )
        )
       )
      )
