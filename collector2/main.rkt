@@ -54,6 +54,15 @@
     )
   )
 
+;; TODO: move to pkgs hash (produced-ebuilds)
+(define base-metadata
+  (string-append
+   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+   "<!DOCTYPE pkgmetadata SYSTEM \"http://www.gentoo.org/dtd/metadata.dtd\">\n"
+   "<pkgmetadata>\n"
+   "</pkgmetadata>\n"
+   )
+  )
 
 (define (create-all [root "."] #:verbose [verbose #f])
   "Create ebuilds in the given location PATH."
@@ -66,7 +75,11 @@
     (hash-for-each
      (produced-ebuilds)
      (lambda (pn hsh)
+       ;; dev-racket/PN
        (make-directory* (build-path base pn))
+       ;; dev-racket/PN/metadata.xml
+       (display-to-file base-metadata (build-path base pn "metadata.xml"))
+       ;; dev-racket/PN/P.ebuild
        (hash-for-each
         hsh
         (lambda (pv script)
