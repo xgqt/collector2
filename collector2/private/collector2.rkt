@@ -56,10 +56,17 @@
 
 (define/contract (make-valid-description name description)
   (-> string? string? string?)
-  (if (or (equal? "" description) (> (string-length description) 79))
+  (if (or
+       ;; empty
+       (equal? "" description)
+       ;; too long
+       (> (string-length description) 79)
+       ;; includes non-ASCII characters
+       (not (null? (regexp-match* #rx"[^\x00-\x7F]" description)))
+       )
       (string-append "the " name " Racket package")
       ;; replace: `, ", \n, \r (^M)
-      (regexp-replace* #rx"[`\"\n\r]" description "")
+      (string-trim (regexp-replace* #rx"[`\"\n\r]" description ""))
       )
   )
 
