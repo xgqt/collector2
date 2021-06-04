@@ -78,7 +78,8 @@
        ;; dev-racket/PN
        (make-directory* (build-path base pn))
        ;; dev-racket/PN/metadata.xml
-       (display-to-file base-metadata (build-path base pn "metadata.xml"))
+       (display-to-file base-metadata
+                        (build-path base pn "metadata.xml") #:exists 'replace)
        ;; dev-racket/PN/P.ebuild
        (hash-for-each
         hsh
