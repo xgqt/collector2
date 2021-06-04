@@ -39,7 +39,7 @@
   "Trim disallowed elements from `url-path' of given STR."
   (empty:empty-else
    str
-   (remove-branch (trim (url-path str) '(".git" "/." "/")))
+   (remove-branch (trim (url-path str) '(".git" "/." "/" "/master" "/main")))
    )
   )
 
