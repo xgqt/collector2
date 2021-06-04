@@ -60,7 +60,7 @@
   (let*
       (
        [base (build-path root "dev-racket")]
-       [cntr (counter -1)]
+       [cntr (counter)]
        )
     (make-directory* base)
     (hash-for-each
@@ -85,6 +85,9 @@
         )
        )
      )
+    (when verbose
+      (displayln (string-append "Generated " (cntr #:display #t) " ebuilds"))
+      )
     )
   )
 
