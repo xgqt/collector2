@@ -32,6 +32,7 @@
 
 (provide
  filter-tag
+ hash-filter-build-success
  hash-filter-source
  hash-purge-pkgs
  hash-remove-missing-dependencies
@@ -73,6 +74,16 @@
    (map (lambda (s) (string-contains? pkg (string-append "-" s)))
         arches)
    #t
+   )
+  )
+
+
+(define/contract (hash-filter-build-success hsh)
+  (-> (and/c hash? immutable?) (and/c hash? immutable?))
+  (hash-filter
+   (lambda (h) (if (hash-ref (hash-ref h 'build (hash)) 'success-log #f)
+                #t #f))
+   hsh
    )
   )
 
