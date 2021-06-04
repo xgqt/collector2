@@ -36,13 +36,6 @@
   (string-append "dev-racket/" str)
   )
 
-;; TODO:
-;; filter dependencies with #:platform ?
-;;   ie.: zeromq-r-lib :
-;;        ("zeromq-win32-i386" #:platform "win32\\i386")
-;;        ("zeromq-win32-x86_64" #:platform "win32\\x86_64")
-;;        ("zeromq-x86_64-linux-natipkg" #:platform "x86_64-linux-natipkg"))
-
 ;; NOTICE:
 ;; #:version is only useful when we can generate
 ;;   ebuilds from versions hash
