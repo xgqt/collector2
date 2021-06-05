@@ -38,7 +38,7 @@
   '(
     "/." "/" ".git"
     ;; WORKAROUND: caused by malformed URL:
-    "main" "master" "stable"
+    "/main" "/master" "/stable"
     "/no-deps" "/pre-6" "/for-v5.3.6"
     )
   )
