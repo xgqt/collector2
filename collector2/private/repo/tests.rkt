@@ -46,6 +46,20 @@
   (check-equal? (url-path "http://example.com/asd/fgh/jkl")  "/asd/fgh/jkl")
   (check-equal? (url-path "http://example.com/asd/fgh/jkl/")  "/asd/fgh/jkl/.")
 
+  (check-equal? (url-top "")  "")
+  (check-equal? (url-top "example.com")  "")
+  (check-equal? (url-top "example.com/asd/fgh/jkl")  "")
+
+  (check-equal? (url-top "http://example")  "example")
+  (check-equal? (url-top "http://example.com")  "example.com")
+  (check-equal? (url-top "http://example.com/")  "example.com")
+  (check-equal? (url-top "http://example.com/asd/fgh/jkl")  "example.com")
+
+  (check-equal? (url-top "http://xyz@example.com:123")  "xyz@example.com:123")
+  (check-equal? (url-top "http://xyz@example.com:123/")  "xyz@example.com:123")
+  (check-equal? (url-top "http://xyz@example.com:123/asd/fgh/jkl")
+                "xyz@example.com:123")
+
   (check-equal? (get-branch "")  "")
   (check-equal? (get-branch "fgh/jkl")  "")
   (check-equal? (get-branch "fgh/jkl#trunk")  "trunk")
