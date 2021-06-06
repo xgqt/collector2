@@ -37,6 +37,7 @@
 
 (define/contract
   (ebuild pn        pv
+          racket_pn
           gh_dom    gh_repo   gh_commit
           license   description
           #:req     [required_use #f]
@@ -46,6 +47,7 @@
           )
   (->*   (
           string?   string?
+          (or/c boolean? string?)
           string?   string?   string?
           string?   string?
           )
@@ -61,18 +63,26 @@
   (when verbose (displayln (string-append "[EBUILD: " pn "-" pv "]")))
   (let
       (
-       [racket_req_use  (if required_use
-                            (string-append
-                             "\n"
-                             "RACKET_REQ_USE=\"" required_use "\""  "\n"
-                             ) "")]
-       [deps  (if (and (list? dependencies) (not (null? dependencies)))
-                  (racket-pkgs->pms-unrolled dependencies) "")]
-       [s  (if (and +dir (not (equal? "" +dir)))
-               (string-append
-                "\n"
-                "S=\"${S}/" +dir "\""  "\n"
-                ) "")]
+       [racket_pn_section       (if (member racket_pn (list #f "" pn))
+                                    ""
+                                    (string-append
+                                     "RACKET_PN=\"" racket_pn "\""  "\n"
+                                     ))]
+       [racket_req_use_section  (if required_use
+                                    (string-append
+                                     "RACKET_REQ_USE=\"" required_use "\""  "\n"
+                                     )
+                                    "")]
+       [deps_section            (if (and (list? dependencies)
+                                         (not (null? dependencies)))
+                                    (racket-pkgs->pms-unrolled dependencies)
+                                    "")]
+       [s_section               (if (and +dir (not (equal? "" +dir)))
+                                    (string-append
+                                     "\n"
+                                     "S=\"${S}/" +dir "\""  "\n"
+                                     )
+                                    "")]
        )
     (string-append
      ;; header
@@ -98,7 +108,9 @@
      "fi"                                            "\n"
 
      ;; required USE
-     racket_req_use
+     (if (string=? "" racket_pn_section racket_req_use_section)  ""  "\n")
+     racket_pn_section
+     racket_req_use_section
 
      ;; inherits
      "\n"
@@ -122,10 +134,10 @@
      "SLOT=\"0\""                                    "\n"
 
      ;; dependencies
-     deps
+     deps_section
 
      ;; S - temporary build directory
-     s
+     s_section
      )
     )
   )

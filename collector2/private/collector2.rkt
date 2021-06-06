@@ -85,6 +85,7 @@
        [pn          name]
        [pv          (epoch->pv (hash-ref data 'last-updated 0))]
        [p           (string-append name "-" pv)]
+       [racket_pn   name]
        [src         (hash-ref data 'source "")]
        [gh_dom      (url-top src)]
        [gh_repo     (string->repo src)]
@@ -96,7 +97,8 @@
     (make-hash
      (list
       (cons pv
-            (ebuild pn pv
+            (ebuild (make-valid-name pn) pv
+                    racket_pn
                     gh_dom gh_repo gh_commit
                     "all-rights-reserved"  ; license placeholder
                     description

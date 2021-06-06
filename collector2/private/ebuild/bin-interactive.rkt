@@ -51,6 +51,13 @@
     (begin (display "Package version\nPV= ... ")
            (read-line))
 
+    (begin (if
+            (yesno "Racket Package name (different from PN)")
+            (begin (display "RACKET_PN= ... ")
+                   (read-line))
+            #f
+            ))
+
     (begin (display "Git domain\nGH_DOM= ... ")
            (read-line))
 
