@@ -46,6 +46,15 @@
 Parse Racket catalogs and generate ebuild scripts.
 
 
+@subsection{Upstream}
+
+This tool is developed by the
+@link["https://src_prepare.gitlab.io/" "src_prepare group"].
+
+The upstream repository can be found on
+@link["https://gitlab.com/src_prepare/collector2" "GitLab"].
+
+
 @section{Requiring the collector2 module}
 
 @defmodule[collector2]
