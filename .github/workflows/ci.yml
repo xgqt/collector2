@@ -21,9 +21,11 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 
+name: CI
+
+
 on: [push, pull_request]
 
-name: CI
 
 jobs:
   build:
@@ -33,6 +35,7 @@ jobs:
       matrix:
         racket-version: ["stable", "current"]
         racket-variant: ["BC", "CS"]
+
     steps:
       - uses: actions/checkout@v2
       - uses: Bogdanp/setup-racket@v0.12
@@ -42,11 +45,11 @@ jobs:
           variant: ${{ matrix.racket-variant }}
           version: ${{ matrix.racket-version }}
 
-      - name: Installing collector2 and its dependencies
-        run: raco pkg install --no-docs --auto --name collector2
+      - name: Installing the project and its dependencies
+        run: make install
 
-      - name: Compiling collector2 and building its docs
-        run: raco setup --check-pkg-deps --unused-pkg-deps collector2
+      - name: Compiling the project and building its docs
+        run: make setup
 
-      - name: Testing collector2
-        run: raco test -x -p collector2
+      - name: Testing the project
+        run: make test
