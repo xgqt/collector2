@@ -24,8 +24,6 @@
 #lang info
 
 
-(define collection '(collector2))
-
 (define test-omit-paths
   '(
     ;; FIXME: testing scribbling is somehow broken
