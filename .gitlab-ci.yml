@@ -31,12 +31,16 @@ stages:
 
 image: racket/racket:8.1-full
 
+before_script:
+  - apt-get update
+  - apt-get install -y racket sqlite3
+  - make install
+
 
 test:
   stage: test
 
   script:
-    - make install
     - make setup
     - make check-deps
     - make test
