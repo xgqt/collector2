@@ -27,15 +27,16 @@
 (require
  racket/cmdline
  racket/file
+ racket/format
+ counter
  "private/collector2.rkt"
- "private/common/counter.rkt"
  "private/common/separator.rkt"
  )
 
 
 (define (dump-all)
   (let
-      ([cntr (counter)])
+      ([cntr (make-counter 0)])
     (hash-for-each
      (produced-ebuilds)
      (lambda (pn hsh)
@@ -43,7 +44,7 @@
         hsh
         (lambda (pv script)
           (displayln separator)
-          (displayln (string-append "[" (cntr) "]: " pn " - " pv))
+          (displayln (~a "[" (cntr) "]: " pn " - " pv))
           (newline)
           (displayln script)
           (displayln separator)
@@ -69,7 +70,7 @@
   (let*
       (
        [base (build-path root "dev-racket")]
-       [cntr (counter)]
+       [cntr (make-counter 0)]
        )
     (make-directory* base)
     (hash-for-each
@@ -90,11 +91,10 @@
                 ])
             (display-to-file script file-path #:exists 'replace)
             (when verbose
-              (displayln (string-append
-                          "Generated "
-                          "[" (cntr) "]: " pn " - " pv
-                          " in " (path->string file-path)
-                          ))
+              (displayln (~a "Generated "
+                             "[" (cntr) "]: " pn " - " pv
+                             " in " (path->string file-path)
+                             ))
               )
             )
           )
@@ -102,7 +102,7 @@
        )
      )
     (when verbose
-      (displayln (string-append "Generated " (cntr #:display #t) " ebuilds"))
+      (displayln (~a "Generated " (cntr 'get 'val) " ebuilds"))
       )
     )
   )
