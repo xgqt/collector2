@@ -21,17 +21,36 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 
-image: racket/racket:8.1-full
-
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  TERM: dumb
 
 stages:
   - test
+  - pages
+
+image: racket/racket:8.1-full
 
 
 test:
   stage: test
+
   script:
     - make install
     - make setup
     - make check-deps
     - make test
+
+
+pages:
+  stage: pages
+  only:
+    - master
+
+  script:
+    - make docs
+    - mv doc public
+
+  artifacts:
+    paths:
+      - public
