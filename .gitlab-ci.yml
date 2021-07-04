@@ -21,16 +21,11 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 
-image: debian:testing-20210208
+image: racket/racket:8.1-full
 
 
 stages:
   - test
-
-
-before_script:
-  - apt-get update
-  - apt-get install -y make racket sqlite3
 
 
 test:
