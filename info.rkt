@@ -33,6 +33,7 @@
 (define deps
   '(
     "base"
+    "counter"
     )
   )
 (define build-deps
