@@ -26,13 +26,14 @@
 
 (module+ main
   (require
+   racket/format
+   counter
    "all.rkt"
-   "../common/counter.rkt"
    )
 
-  (define cntr (counter))
+  (define cntr (make-counter 0))
 
   (for ([name (sort (hash-keys (all-pkgs)) string<?)])
-    (displayln (string-append (cntr) ": " name))
+    (displayln (~a (cntr) ": " name))
     )
   )
