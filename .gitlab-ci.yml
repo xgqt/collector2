@@ -33,7 +33,7 @@ image: racket/racket:8.1-full
 
 before_script:
   - apt-get update
-  - apt-get install -y racket sqlite3
+  - apt-get install -y make sqlite3
   - make install
 
 
