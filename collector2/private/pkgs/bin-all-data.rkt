@@ -27,22 +27,23 @@
 (module+ main
   (require
    racket/format
-   "../common/counter.rkt"
+   counter
    "../common/separator.rkt"
    "all.rkt"
    )
 
 
-  (define cntr (counter))
+  (define cntr (make-counter 0))
 
   (hash-for-each
    (all-pkgs)
    (lambda (name data)
-     (displayln (string-append separator             "\n"
-                               "number: " (cntr)     "\n"
-                               "name:   " (~a name)  "\n"
-                               "data:   " (~v data)  "\n"
-                               separator             "\n"
-                               )))
+     (displayln (~a separator             "\n"
+                    "number: " (cntr)     "\n"
+                    "name:   " (~a name)  "\n"
+                    "data:   " (~v data)  "\n"
+                    separator             "\n"
+                    ))
+     )
    )
   )
