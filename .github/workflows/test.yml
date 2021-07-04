@@ -21,7 +21,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 
-name: CI
+name: Test
 
 
 on: [push, pull_request]
@@ -45,11 +45,11 @@ jobs:
           variant: ${{ matrix.racket-variant }}
           version: ${{ matrix.racket-version }}
 
-      - name: Installing the project and its dependencies
+      - name: Instal
         run: make install
 
-      - name: Compiling the project and building its docs
+      - name: Setup
         run: make setup
 
-      - name: Testing the project
+      - name: Test
         run: make test
