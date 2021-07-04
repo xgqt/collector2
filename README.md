@@ -10,8 +10,8 @@
     <a href="https://gitlab.com/src_prepare/collector2/pipelines">
         <img src="https://gitlab.com/src_prepare/collector2/badges/master/pipeline.svg">
     </a>
-    <a href="https://github.com/xgqt/collector2/actions/workflows/ci.yml">
-        <img src="https://github.com/xgqt/collector2/actions/workflows/ci.yml/badge.svg">
+    <a href="https://github.com/xgqt/collector2/actions/workflows/test.yml">
+        <img src="https://github.com/xgqt/collector2/actions/workflows/test.yml/badge.svg">
     </a>
     <a href="https://gitlab.com/src_prepare/collector2/">
         <img src="https://gitlab.com/src_prepare/badge/-/raw/master/hosted_on-gitlab-orange.svg">
