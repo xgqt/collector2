@@ -39,8 +39,7 @@
     )
   )
 
-
-(module+ main
+(define (ebuild-interactive)
   (display
    (ebuild
     #:verbose #t
@@ -101,4 +100,9 @@
 
     )
    )
+)
+
+
+(module+ main
+  (ebuild-interactive)
   )
