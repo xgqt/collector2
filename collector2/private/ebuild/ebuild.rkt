@@ -123,15 +123,16 @@
      ;; homepage
      "HOMEPAGE=\"https://" gh_dom "/" gh_repo "\""   "\n"
 
-     ;; restrictions (remove later)
      "\n"
-     "RESTRICT=\"mirror\""                           "\n"
 
      ;; license
      "LICENSE=\"" license "\""                       "\n"
 
      ;; slot (maybe "0/PV"?)
      "SLOT=\"0\""                                    "\n"
+
+     ;; restrictions (remove later)
+     "RESTRICT=\"mirror\""                           "\n"
 
      ;; dependencies
      deps_section
