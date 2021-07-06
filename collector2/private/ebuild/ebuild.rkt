@@ -74,14 +74,11 @@
                                      )
                                     "")]
        [deps_section            (if (and (list? dependencies)
-                                         (not (null? dependencies)))
+                                       (not (null? dependencies)))
                                     (racket-pkgs->pms-unrolled dependencies)
                                     "")]
        [s_section               (if (and +dir (not (equal? "" +dir)))
-                                    (string-append
-                                     "\n"
-                                     "S=\"${S}/" +dir "\""  "\n"
-                                     )
+                                    (string-append "S=\"${S}/" +dir "\""  "\n")
                                     "")]
        )
     (string-append
@@ -123,6 +120,9 @@
      ;; homepage
      "HOMEPAGE=\"https://" gh_dom "/" gh_repo "\""   "\n"
 
+     ;; S - temporary build directory
+     s_section
+
      "\n"
 
      ;; license
@@ -136,9 +136,6 @@
 
      ;; dependencies
      deps_section
-
-     ;; S - temporary build directory
-     s_section
      )
     )
   )
