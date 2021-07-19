@@ -27,7 +27,7 @@ indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[.gitlab-ci.yml]
+[{*.xml,*.yml}]
 indent_size = 2
 tab_width = 2
 
@@ -35,4 +35,7 @@ tab_width = 2
 indent_style = tab
 
 [Makefile]
+indent_style = tab
+
+[metadata.xml]
 indent_style = tab
