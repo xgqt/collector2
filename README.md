@@ -4,16 +4,16 @@
     <a href="http://pkgs.racket-lang.org/package/collector2">
         <img src="https://img.shields.io/badge/raco_pkg_install-collector2-aa00ff.svg">
     </a>
-    <a href="https://archive.softwareheritage.org/browse/origin/?origin_url=https://gitlab.com/src_prepare/collector2">
-        <img src="https://archive.softwareheritage.org/badge/origin/https://gitlab.com/src_prepare/collector2/">
+    <a href="https://archive.softwareheritage.org/browse/origin/?origin_url=https://gitlab.com/src_prepare/racket/collector2">
+        <img src="https://archive.softwareheritage.org/badge/origin/https://gitlab.com/src_prepare/racket/collector2/">
     </a>
-    <a href="https://gitlab.com/src_prepare/collector2/pipelines">
-        <img src="https://gitlab.com/src_prepare/collector2/badges/master/pipeline.svg">
+    <a href="https://gitlab.com/src_prepare/racket/collector2/pipelines">
+        <img src="https://gitlab.com/src_prepare/racket/collector2/badges/master/pipeline.svg">
     </a>
     <a href="https://github.com/xgqt/collector2/actions/workflows/test.yml">
         <img src="https://github.com/xgqt/collector2/actions/workflows/test.yml/badge.svg">
     </a>
-    <a href="https://gitlab.com/src_prepare/collector2/">
+    <a href="https://gitlab.com/src_prepare/racket/collector2/">
         <img src="https://gitlab.com/src_prepare/badge/-/raw/master/hosted_on-gitlab-orange.svg">
     </a>
     <a href="https://gentoo.org/">
@@ -25,7 +25,7 @@
     <a href="https://app.element.io/#/room/#src_prepare:matrix.org">
         <img src="https://gitlab.com/src_prepare/badge/-/raw/master/chat-matrix-green.svg">
     </a>
-    <a href="https://gitlab.com/src_prepare/collector2/commits/master.atom">
+    <a href="https://gitlab.com/src_prepare/racket/collector2/commits/master.atom">
         <img src="https://gitlab.com/src_prepare/badge/-/raw/master/feed-atom-orange.svg">
     </a>
 </p>
