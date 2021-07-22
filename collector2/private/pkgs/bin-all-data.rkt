@@ -28,8 +28,8 @@
   (require
    racket/format
    counter
-   "../common/separator.rkt"
    "all.rkt"
+   "separator.rkt"
    )
 
 

@@ -28,7 +28,7 @@
  racket/string
  ebuild
  ebuild-templates/gh
- "common/epoch.rkt"
+ "epoch/epoch.rkt"
  "pkgs/pkgs.rkt"
  "repo/repo.rkt"
  )
