@@ -33,7 +33,7 @@
 
 
 ;; STR - check ; ARG - return
-(define-syntax-rule (empty:empty-else str arg)
+(define-syntax-rule (empty-empty-else str arg)
   (if (equal? str "")
       ""
       arg
@@ -56,7 +56,7 @@
 (define/contract (url-path str)
   (-> string? string?)
   "Extract the \"path\" part of a given STR (treating it as a URL)."
-  (empty:empty-else
+  (empty-empty-else
    str
    (path->string (url->path (string->url str)))
    )

@@ -26,92 +26,27 @@
 
 (require
  racket/cmdline
- racket/file
- racket/format
- counter
+ racket/class
  "private/collector2.rkt"
- "private/common/separator.rkt"
  )
 
 
 (define (dump-all)
-  (let
-      ([cntr (make-counter 0)])
-    (hash-for-each
-     (produced-ebuilds)
-     (lambda (pn hsh)
-       (hash-for-each
-        hsh
-        (lambda (pv script)
-          (displayln separator)
-          (displayln (~a "[" (cntr) "]: " pn " - " pv))
-          (newline)
-          (displayln script)
-          (displayln separator)
-          )
-        )
-       )
-     )
-    )
+  {define r (repository)}
+  (send r show)
+  (displayln (string-append "\n" ">>> Packages generated: "
+                            (number->string (length (get-field packages r)))))
   )
 
-;; TODO: move to pkgs hash (produced-ebuilds)
-(define base-metadata
-  (string-append
-   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-   "<!DOCTYPE pkgmetadata SYSTEM \"http://www.gentoo.org/dtd/metadata.dtd\">\n"
-   "<pkgmetadata>\n"
-   "</pkgmetadata>\n"
-   )
-  )
-
-(define (create-all [root "."] #:verbose [verbose #f])
-  "Create ebuilds in the given location PATH."
-  (let*
-      (
-       [base (build-path root "dev-racket")]
-       [cntr (make-counter 0)]
-       )
-    (make-directory* base)
-    (hash-for-each
-     (produced-ebuilds)
-     (lambda (pn hsh)
-       ;; dev-racket/PN
-       (make-directory* (build-path base pn))
-       ;; dev-racket/PN/metadata.xml
-       (display-to-file base-metadata
-                        (build-path base pn "metadata.xml") #:exists 'replace)
-       ;; dev-racket/PN/P.ebuild
-       (hash-for-each
-        hsh
-        (lambda (pv script)
-          (let
-              ([file-path
-                (build-path base pn (string-append pn "-" pv ".ebuild"))
-                ])
-            (display-to-file script file-path #:exists 'replace)
-            (when verbose
-              (displayln (~a "Generated "
-                             "[" (cntr) "]: " pn " - " pv
-                             " in " (path->string file-path)
-                             ))
-              )
-            )
-          )
-        )
-       )
-     )
-    (when verbose
-      (displayln (~a "Generated " (cntr 'get 'val) " ebuilds"))
-      )
-    )
+(define (create-all [root "."])
+  (send (repository) save-packages root)
   )
 
 
 (module+ main
 
   (define create-all-directory-root (make-parameter (current-directory)))
-  (define verbose (make-parameter #f))
+  (define action (make-parameter 'dump-all))
 
   (command-line
    #:program "collector2"
@@ -122,23 +57,24 @@
     "Set the directory for `create-all'"
     (create-all-directory-root create-all-directory)
     ]
-   [("-v" "--verose")
-    "Increate verbosity"
-    (verbose #t)
-    ]
 
    #:once-any
    [("-d" "--dump-all")
     "Dump ebuilds to stdout"
-    (dump-all)
+    (action 'dump-all)
     ]
    [("-c" "--create-all")
     "Create ebuilds in a DIR"
-    (create-all (create-all-directory-root) #:verbose (verbose))
+    (action 'create-all)
     ]
 
-   #:ps
+   #:ps ""
    "Copyright (c) 2021, src_prepare group"
    "Licensed under the GNU GPL v3 License"
    )
+
+  (case (action)
+    [(dump-all)    (dump-all)]
+    [(create-all)  (create-all (create-all-directory-root))]
+    )
   )

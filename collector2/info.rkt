@@ -25,22 +25,13 @@
 
 
 (define test-omit-paths
-  '(
-    ;; FIXME: testing scribbling is somehow broken
-    "scribblings"
-    )
-  )
+  '("scribblings"))
 
 (define racket-launcher-names
-  '("collector2")
-  )
+  '("collector2"))
 (define racket-launcher-libraries
-  '("main.rkt")
-  )
+  '("main.rkt"))
 
 (define scribblings
-  '((
-     "scribblings/collector2.scrbl"
-     ()
-     ))
-  )
+  '(("scribblings/collector2.scrbl"
+     (multi-page) (tool) "collector2")))

@@ -34,6 +34,7 @@
   '(
     "base"
     "counter"
+    "ebuild"
     )
   )
 (define build-deps

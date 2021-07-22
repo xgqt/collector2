@@ -46,7 +46,7 @@
 (define/contract (string->repo str)
   (-> string? string?)
   "Trim disallowed elements from `url-path' of given STR."
-  (empty:empty-else
+  (empty-empty-else
    str
    (remove-branch (trim (url-path str) banned))
    )

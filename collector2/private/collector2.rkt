@@ -26,14 +26,16 @@
 (require
  racket/contract
  racket/string
+ ebuild
+ ebuild-templates/gh
  "common/epoch.rkt"
- "ebuild/ebuild.rkt"
  "pkgs/pkgs.rkt"
  "repo/repo.rkt"
  )
 
 (provide
- produced-ebuilds
+ packages
+ repository
  )
 
 
@@ -71,53 +73,112 @@
   )
 
 
-;; TODO:
-;;   - data->ebuild-variables
-;;   - data->ebuild
+(define/contract (string->pms-pkg str)
+  (-> string? string?)
+  (string-append "dev-racket/" str)
+  )
 
-;; TODO: only pass src_uri and let ebuild do the rest
-;;       (also maybe add ebuild-data-validate)
+;; NOTICE:
+;; #:version is only useful when we can generate
+;;   ebuilds from versions hash
 
-(define/contract (data->ebuild name data)
-  (-> string? hash? hash?)
-  (let*
-      (
-       [pn          name]
-       [pv          (epoch->pv (hash-ref data 'last-updated 0))]
-       [p           (string-append name "-" pv)]
-       [racket_pn   name]
-       [src         (hash-ref data 'source "")]
-       [gh_dom      (url-top src)]
-       [gh_repo     (string->repo src)]
-       [gh_commit   (hash-ref data 'checksum "")]
-       [description (make-valid-description name (hash-ref data 'description ""))]
-       [depend      (hash-ref data 'dependencies #f)]
-       [path        (query-path src)]
-       )
-    (make-hash
-     (list
-      (cons pv
-            (ebuild (make-valid-name pn) pv
-                    racket_pn
-                    gh_dom gh_repo gh_commit
-                    "all-rights-reserved"  ; license placeholder
-                    description
-                    #:dep depend
-                    #:+dir path
-                    )
-            )
-      )
-     )
+(define/contract (racket-pkg->pms-pkg arg)
+  (-> (or/c string? list?) string?)
+  (cond
+    [(string? arg) (string->pms-pkg arg)]
+    [(list? arg)   (string->pms-pkg (car arg))]
     )
   )
 
 
-(define (produced-ebuilds)
-  (make-hash
-   ;; NOTICE: map produces a list
-   (hash-map (pkgs)
-             (lambda (name data)
-               (cons (make-valid-name name) (data->ebuild name data)))
-             )
+(define ebuild-rkt%
+  (class ebuild-gh%
+    (init-field
+     [RACKET_DEPEND  '()]
+     )
+
+    (define/private (unroll-RACKET_DEPEND)
+      (map racket-pkg->pms-pkg RACKET_DEPEND)
+      )
+
+    (super-new
+     [EAPI      8]
+     [RESTRICT  '("mirror")]
+     [HOMEPAGE  ""]  ; CONSIDER: maybe fix in ebuild-gh class?
+     )
+
+    (inherit-field inherits DEPEND RDEPEND)
+
+    (set! inherits (append '("racket") inherits))
+
+    (when (not (null? RACKET_DEPEND))
+      (set! RDEPEND (unroll-RACKET_DEPEND))
+      (set! DEPEND  '("${RDEPEND}"))
+      )
+    )
+  )
+
+
+(define (packages)
+  (hash-map
+   (pkgs)
+   ;; key - name
+   ;; val - data
+   (lambda (name data)
+     {define src (hash-ref data 'source "")}
+     {define snapshot (epoch->pv (hash-ref data 'last-updated 0))}
+     {define gh_dom  (url-top src)}
+     {define gh_repo (string->repo src)}
+     {define gh_web  (string-append "https://" gh_dom "/" gh_repo)}
+     {define eb%
+       (class ebuild-rkt%
+         (super-new
+          [GH_DOM     gh_dom]
+          [GH_REPO    gh_repo]
+          [DESCRIPTION
+           (make-valid-description name (hash-ref data 'description ""))]
+          [RACKET_DEPEND  (hash-ref data 'dependencies '())]
+          [S
+           (cond
+             [(query-path src) => (lambda (s) (string-append "${S}/" s))]
+             [else  #f]
+             )]
+          ))}
+     (new package%
+          [CATEGORY  "dev-racket"]
+          [PN        (make-valid-name name)]
+          [ebuilds
+           (hash
+            (live-version)
+            (new eb%
+                 [GH_COMMIT  #f]
+                 [KEYWORDS   '()]
+                 )
+            (simple-version snapshot)
+            (new eb%
+                 [GH_COMMIT  (hash-ref data 'checksum "")]
+                 [KEYWORDS   '("~amd64")]
+                 )
+            )]
+          [metadata
+           (new metadata%
+                [upstream (upstream
+                           '() #f #f gh_web
+                           (case gh_dom  ; upstream
+                             [("github.com")  (list (remote-id 'github gh_repo))]
+                             [("gitlab.com")  (list (remote-id 'gitlab gh_repo))]
+                             [else  '()]
+                             )
+                           )]
+                )]
+          )
+     )
    )
+  )
+
+(define (repository)
+  (new repository%
+       [name "racket-overlay"]
+       [packages (packages)]
+       )
   )

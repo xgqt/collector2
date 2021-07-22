@@ -32,9 +32,9 @@
 (module+ test
   (require rackunit)
 
-  (check-equal? (empty:empty-else "" "")  "")
-  (check-equal? (empty:empty-else "" 1)  "")
-  (check-equal? (empty:empty-else "_" 1)  1)
+  (check-equal? (empty-empty-else "" "")  "")
+  (check-equal? (empty-empty-else "" 1)  "")
+  (check-equal? (empty-empty-else "_" 1)  1)
 
   (check-equal? (trim "" '())  "")
   (check-equal? (trim "123sample321" '())  "123sample321")
