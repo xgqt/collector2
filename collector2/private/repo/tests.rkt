@@ -55,6 +55,14 @@
   (check-equal? (url-top "http://example.com/")  "example.com")
   (check-equal? (url-top "http://example.com/asd/fgh/jkl")  "example.com")
 
+  (check-equal? (url-top "http://xyz@example.com")  "xyz@example.com")
+  (check-equal? (url-top "http://xyz@example.com/")  "xyz@example.com")
+  (check-equal? (url-top "http://xyz@example.com/asd/fgh/jkl")  "xyz@example.com")
+
+  (check-equal? (url-top "http://example.com:123")  "example.com:123")
+  (check-equal? (url-top "http://example.com:123/")  "example.com:123")
+  (check-equal? (url-top "http://example.com:123/asd/fgh/jkl")  "example.com:123")
+
   (check-equal? (url-top "http://xyz@example.com:123")  "xyz@example.com:123")
   (check-equal? (url-top "http://xyz@example.com:123/")  "xyz@example.com:123")
   (check-equal? (url-top "http://xyz@example.com:123/asd/fgh/jkl")

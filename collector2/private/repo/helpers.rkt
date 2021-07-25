@@ -72,7 +72,11 @@
        [_up  (url-port u)]
        [up   (if (integer? _up) (number->string _up) #f)]
        )
-      (string-join (filter string? (list uu uh up)) "@" #:before-last ":")
+    (string-append
+     (if uu  (string-append uu "@")  "")  ; user
+     (if uh  uh  "")                      ; host
+     (if up  (string-append ":" up)  "")  ; port
+     )
     )
   )
 
