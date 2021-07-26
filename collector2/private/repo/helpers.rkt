@@ -34,10 +34,10 @@
 
 ;; STR - check ; ARG - return
 (define-syntax-rule (empty-empty-else str arg)
-  (if (equal? str "")
-      ""
-      arg
-      )
+  (case str
+    [("")  ""]
+    [else  arg]
+    )
   )
 
 (define/contract (trim str lst)
