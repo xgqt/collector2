@@ -52,7 +52,9 @@
      (hash-filter-build-success
       (hash-remove-platformed
        (hash-remove-main-distribution
-        (hash-filter-source all-pkgs-hash "git")
+        (hash-filter-source
+         (hash-filter-source all-pkgs-hash #rx".*git.*")
+         #rx"^((?!.zip|.tar).)*$")
         )
        )
       )

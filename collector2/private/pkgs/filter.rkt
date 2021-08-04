@@ -88,11 +88,10 @@
   )
 
 
-(define/contract (hash-filter-source hsh str)
-  (-> (and/c hash? immutable?) string?
-      (and/c hash? immutable?))
+(define/contract (hash-filter-source hsh rx)
+  (-> (and/c hash? immutable?) regexp? (and/c hash? immutable?))
   (hash-filter
-   (lambda (h) (string-contains? (hash-ref h 'source "") str))
+   (lambda (h) (regexp-match-exact? rx (hash-ref h 'source "")))
    hsh
    )
   )
