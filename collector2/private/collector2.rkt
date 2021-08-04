@@ -147,9 +147,9 @@
      {define my-ebuilds
        ;; If "gh_dom" is supported by "gh.eclass" generate both live
        ;; and non-live, otherwise generate only live
-       (if (or (member gh_dom '("codeberg.com" "git.sr.ht" "github.com"))
-              ;; we have to "trust" upstream they actually use GitLab...
-              (regexp-match-exact? #rx".*gitlab.*" gh_dom))
+       (if (regexp-match-exact?
+            #rx".*(bitbucket|codeberg|git.sr.ht|github|gitlab).*" gh_dom
+            )
            (hash
             (live-version)
             (new my-ebuild%
