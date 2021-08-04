@@ -125,12 +125,12 @@
    ;; key - name
    ;; val - data
    (lambda (name data)
-     {define src (hash-ref data 'source "")}
+     {define src      (hash-ref data 'source "")}
      {define snapshot (epoch->pv (hash-ref data 'last-updated 0))}
-     {define gh_dom  (url-top src)}
-     {define gh_repo (string->repo src)}
-     {define gh_web  (string-append "https://" gh_dom "/" gh_repo)}
-     {define eb%
+     {define gh_dom   (url-top src)}
+     {define gh_repo  (string->repo src)}
+     {define gh_web   (string-append "https://" gh_dom "/" gh_repo)}
+     {define my-ebuild%
        (class ebuild-rkt%
          (super-new
           [GH_DOM     gh_dom]
@@ -144,33 +144,47 @@
              [else  #f]
              )]
           ))}
-     (new package%
-          [CATEGORY  "dev-racket"]
-          [PN        (make-valid-name name)]
-          [ebuilds
+     {define my-ebuilds
+       ;; If "gh_dom" is supported by "gh.eclass" generate both live
+       ;; and non-live, otherwise generate only live
+       (if (or (member gh_dom '("codeberg.com" "git.sr.ht" "github.com"))
+              ;; we have to "trust" upstream they actually use GitLab...
+              (regexp-match-exact? #rx".*gitlab.*" gh_dom))
            (hash
             (live-version)
-            (new eb%
+            (new my-ebuild%
                  [GH_COMMIT  #f]
                  [KEYWORDS   '()]
                  )
             (simple-version snapshot)
-            (new eb%
+            (new my-ebuild%
                  [GH_COMMIT  (hash-ref data 'checksum "")]
                  [KEYWORDS   '("~amd64")]
                  )
-            )]
-          [metadata
-           (new metadata%
-                [upstream (upstream
-                           '() #f #f gh_web
-                           (case gh_dom  ; upstream
-                             [("github.com")  (list (remote-id 'github gh_repo))]
-                             [("gitlab.com")  (list (remote-id 'gitlab gh_repo))]
-                             [else  '()]
-                             )
-                           )]
-                )]
+            )
+           (hash
+            (live-version)
+            (new my-ebuild%
+                 [GH_COMMIT  #f]
+                 [KEYWORDS   '()]
+                 )
+            )
+           )}
+     {define my-upstream
+       (upstream  ; maintainers changelog doc bugs-to remote-ids
+        '() #f #f gh_web
+        (case gh_dom
+          [("github.com")  (list (remote-id 'github gh_repo))]
+          [("gitlab.com")  (list (remote-id 'gitlab gh_repo))]
+          [else  '()]
+          )
+        )
+       }
+     (new package%
+          [CATEGORY  "dev-racket"]
+          [PN        (make-valid-name name)]
+          [ebuilds   my-ebuilds]
+          [metadata  (new metadata% [upstream my-upstream])]
           )
      )
    )
