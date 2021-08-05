@@ -35,6 +35,7 @@
     "base"
     "counter"
     "ebuild"
+    "threading-lib"
     )
   )
 (define build-deps

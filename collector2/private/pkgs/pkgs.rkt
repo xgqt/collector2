@@ -24,6 +24,7 @@
 #lang racket/base
 
 (require
+ threading
  "all.rkt"
  "filter.rkt"
  )
@@ -40,24 +41,17 @@
        [pkgs#main-distribution  (filter-tag "main-distribution" all-pkgs-hash)]
        [pkgs#platformed         (filter pkg-for-arch? (hash-keys all-pkgs-hash))]
        [hash-remove-main-distribution
-        (lambda (hsh)
-          (hash-purge-pkgs hsh pkgs#main-distribution))
-        ]
+        (lambda (hsh) (hash-purge-pkgs hsh pkgs#main-distribution))]
        [hash-remove-platformed
-        (lambda (hsh)
-          (hash-purge-pkgs hsh pkgs#platformed))
-        ]
+        (lambda (hsh) (hash-purge-pkgs hsh pkgs#platformed))]
        )
-    (hash-remove-missing-dependencies
-     (hash-filter-build-success
-      (hash-remove-platformed
-       (hash-remove-main-distribution
-        (hash-filter-source
-         (hash-filter-source all-pkgs-hash #rx".*git.*")
-         #rx"^((?!.zip|.tar).)*$")
+    (~> all-pkgs-hash
+        (hash-filter-source _ #rx".*git.*")  ; only URLs containing "git"
+        (hash-filter-source _ #rx"^((?!.zip|.tar).)*$")  ; remove archives
+        hash-remove-main-distribution
+        hash-remove-platformed
+        hash-filter-build-success
+        hash-remove-missing-dependencies
         )
-       )
-      )
-     )
     )
   )
