@@ -71,8 +71,8 @@
   (check-eq?  (length (filter-tag "" test-hash))  0)
   (check-eq?  (length (filter-tag "main-distribution" test-hash))  2)
 
-  (check-equal?  (numkeys (hash-filter-source test-hash ""))  6)
-  (check-equal?  (numkeys (hash-filter-source test-hash "gitlab"))  1)
+  (check-equal?  (numkeys (hash-filter-source test-hash #rx".*"))  6)
+  (check-equal?  (numkeys (hash-filter-source test-hash #rx".*gitlab.*"))  1)
 
   (check-eq?  (numkeys (hash-purge-pkgs test-hash '()))  6)
   (check-eq?
