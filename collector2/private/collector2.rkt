@@ -147,29 +147,22 @@
      {define my-ebuilds
        ;; If "gh_dom" is supported by "gh.eclass" generate both live
        ;; and non-live, otherwise generate only live
-       (if (regexp-match-exact?
-            #rx".*(bitbucket|codeberg|git.sr.ht|github|gitlab).*" gh_dom
-            )
-           (hash
-            (live-version)
-            (new my-ebuild%
-                 [GH_COMMIT  #f]
-                 [KEYWORDS   '()]
-                 )
-            (simple-version snapshot)
-            (new my-ebuild%
-                 [GH_COMMIT  (hash-ref data 'checksum "")]
-                 [KEYWORDS   '("~amd64")]
-                 )
-            )
-           (hash
-            (live-version)
-            (new my-ebuild%
-                 [GH_COMMIT  #f]
-                 [KEYWORDS   '()]
-                 )
-            )
-           )}
+       (let ([live-version-only
+              (hash (live-version) (new my-ebuild% [KEYWORDS '()]))])
+         (if (regexp-match-exact?
+              #rx".*(bitbucket|codeberg|git.sr.ht|github|gitlab).*" gh_dom
+              )
+             ;; live version + generated from "snapshot"
+             (hash-set live-version-only
+                       (simple-version snapshot)
+                       (new my-ebuild%
+                            [GH_COMMIT  (hash-ref data 'checksum "")]
+                            [KEYWORDS   '("~amd64")]
+                            ))
+             ;; live version only
+             live-version-only
+             )
+         )}
      {define my-upstream
        (upstream  ; maintainers changelog doc bugs-to remote-ids
         '() #f #f gh_web
