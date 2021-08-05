@@ -35,8 +35,7 @@
 (define/contract (epoch->string seconds)
   (-> integer? string?)
   "Convert SECONDS (since epoch) to a ISO-8601 date string."
-  (parameterize
-      ([date-display-format 'iso-8601])
+  (parameterize ([date-display-format 'iso-8601])
     (date->string (seconds->date seconds))
     )
   )
