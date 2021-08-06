@@ -24,7 +24,7 @@
 #lang info
 
 
-(define pkg-authors '(src_prepare group))
+(define pkg-authors '(xgqt))
 (define pkg-desc "Parse Racket catalogs and generate ebuild scripts")
 (define version "0.0.0")
 
