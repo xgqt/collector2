@@ -39,7 +39,7 @@
   )
 
 (define (create-all [root "."])
-  (send (repository) save-packages root)
+  (send (repository) save-packages (path->complete-path root))
   )
 
 
