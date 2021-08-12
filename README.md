@@ -33,7 +33,30 @@
 
 ## About
 
-Parse Racket catalogs and generate ebuild scripts
+Parse [Racket packages catalog](https://pkgs.racket-lang.org/)
+and generate [ebuild scripts](https://wiki.gentoo.org/wiki/Ebuild).
+
+
+## Installation
+
+### From Packages Catalog
+
+```sh
+raco pkg install collector2
+```
+
+### From repository
+
+```sh
+raco pkg install --name collector2
+```
+
+
+## Dependencies
+
+[counter](https://gitlab.com/xgqt/scheme-counter)
+[ebuild](https://gitlab.com/xgqt/racket-ebuild)
+[threading-lib](https://github.com/lexi-lambda/threading/tree/master/threading-lib)
 
 
 ## License
