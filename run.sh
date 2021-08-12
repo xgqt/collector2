@@ -26,6 +26,6 @@ set -e
 export PATH
 
 
-cd "$(dirname "${0}")"
+myroot="$(dirname "${0}")"
 
-exec racket ./collector2/main.rkt "${@}"
+exec racket "${myroot}/collector2/main.rkt" "${@}"
