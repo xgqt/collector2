@@ -54,9 +54,9 @@ raco pkg install --name collector2
 
 ## Dependencies
 
-[counter](https://gitlab.com/xgqt/scheme-counter)
-[ebuild](https://gitlab.com/xgqt/racket-ebuild)
-[threading-lib](https://github.com/lexi-lambda/threading/tree/master/threading-lib)
+- [counter](https://gitlab.com/xgqt/scheme-counter)
+- [ebuild](https://gitlab.com/xgqt/racket-ebuild)
+- [threading-lib](https://github.com/lexi-lambda/threading/tree/master/threading-lib)
 
 
 ## License
