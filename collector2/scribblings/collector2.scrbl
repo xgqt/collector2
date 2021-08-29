@@ -57,20 +57,17 @@ The upstream repository can be found on
 
 @itemlist[
  @item{
-  @Flag{C} @nonterm{create-all-directory}
-  or @DFlag{create-all-directory} @nonterm{create-all-directory}
-  --- set the directory
-  for @DFlag{create-all} to @nonterm{create-all-directory}
+  @Flag{d} @nonterm{directory} or @DFlag{directory} @nonterm{directory}
+  --- set the directory for @DFlag{create} to a given @nonterm{directory}
  }
  @item{
-  @Flag{d} or @DFlag{dump-all}
-  --- dump ebuilds to stdout - only show them,
-  do not write to the disk
- }
- @item{
-  @Flag{c} or @DFlag{create-all}
+  @Flag{c} or @DFlag{create}
   --- create ebuilds in a directory (default to the current directory),
   can be overwritten by @DFlag{create-all-directory} flag
+ }
+ @item{
+  @Flag{s} or @DFlag{show}
+  --- dump ebuilds to standard out, do not write to the disk
  }
  @item{
   @Flag{h} or @DFlag{help}

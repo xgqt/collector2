@@ -31,41 +31,41 @@
  )
 
 
-(define (dump-all)
+(define (action:show)
   {define r (repository)}
   (send r show)
   (displayln (string-append "\n" ">>> Packages generated: "
                             (number->string (length (get-field packages r)))))
   )
 
-(define (create-all [root "."])
+(define (action:create [root "."])
   (send (repository) save-packages (path->complete-path root))
   )
 
 
 (module+ main
 
-  (define create-all-directory-root (make-parameter (current-directory)))
-  (define action (make-parameter 'dump-all))
+  (define create-directory (make-parameter (current-directory)))
+  (define action (make-parameter 'show))
 
   (command-line
    #:program "collector2"
 
    #:once-each
-   [("-C" "--create-all-directory")
-    create-all-directory
-    "Set the directory for `create-all'"
-    (create-all-directory-root create-all-directory)
+   [("-d" "--directory")
+    directory
+    "Set the directory for \"create\" option"
+    (create-directory directory)
     ]
 
    #:once-any
-   [("-d" "--dump-all")
-    "Dump ebuilds to stdout"
-    (action 'dump-all)
+   [("-c" "--create")
+    "Create ebuilds in a directory specified by \"directory\" option"
+    (action 'create)
     ]
-   [("-c" "--create-all")
-    "Create ebuilds in a DIR"
-    (action 'create-all)
+   [("-s" "--show")
+    "Dump ebuilds to standard out, do not write to disk"
+    (action 'show)
     ]
 
    #:ps ""
@@ -74,7 +74,7 @@
    )
 
   (case (action)
-    [(dump-all)    (dump-all)]
-    [(create-all)  (create-all (create-all-directory-root))]
+    [(show)    (action:show)]
+    [(create)  (action:create (create-directory))]
     )
   )
