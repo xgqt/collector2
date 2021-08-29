@@ -50,7 +50,7 @@ This tool is developed by the
 @link["https://src_prepare.gitlab.io/" "src_prepare group"].
 
 The upstream repository can be found on
-@link["https://gitlab.com/src_prepare/collector2" "GitLab"].
+@link["https://gitlab.com/src_prepare/racket/collector2" "GitLab"].
 
 
 @section{Console usage}
