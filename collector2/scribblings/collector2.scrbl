@@ -21,14 +21,6 @@
 ;; SPDX-License-Identifier: GPL-3.0-only
 
 
-;; TODO: Docstrings
-;;   - https://blog.racket-lang.org/2012/06/submodules.html
-;;   - https://docs.racket-lang.org/scribble/srcdoc.html
-;; or https://docs.racket-lang.org/reference/procedures.html?q=%20prop%3Aarity-string#%28def._%28%28quote._~23~25kernel%29._prop~3aarity-string%29%29
-;; @(require scribble/extract)
-;; @include-extracted["X.rkt"]
-
-
 #lang scribble/manual
 
 @(require
