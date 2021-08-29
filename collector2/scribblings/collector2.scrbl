@@ -31,14 +31,20 @@
 
 #lang scribble/manual
 
-@require[@for-label[  ; collector2
-                    racket/base]]
+@(require
+   @(only-in scribble/bnf nonterm)
+   @(for-label
+     ;; collector2
+     racket/base
+     )
+   )
 
 
 @title{collector2}
 
-@author[@author+email["Maciej Barć"
-                      "xgqt@riseup.net"]]
+@author[@author+email["Maciej Barć" "xgqt@riseup.net"]]
+
+@table-of-contents[]
 
 
 @section{About}
@@ -55,6 +61,27 @@ The upstream repository can be found on
 @link["https://gitlab.com/src_prepare/collector2" "GitLab"].
 
 
-@section{Requiring the collector2 module}
+@section{Console usage}
 
-@defmodule[collector2]
+@itemlist[
+ @item{
+  @Flag{C} @nonterm{create-all-directory}
+  or @DFlag{create-all-directory} @nonterm{create-all-directory}
+  --- set the directory
+  for @DFlag{create-all} to @nonterm{create-all-directory}
+ }
+ @item{
+  @Flag{d} or @DFlag{dump-all}
+  --- dump ebuilds to stdout - only show them,
+  do not write to the disk
+ }
+ @item{
+  @Flag{c} or @DFlag{create-all}
+  --- create ebuilds in a directory (default to the current directory),
+  can be overwritten by @DFlag{create-all-directory} flag
+ }
+ @item{
+  @Flag{h} or @DFlag{help}
+  --- show help information with usage options
+ }
+ ]
