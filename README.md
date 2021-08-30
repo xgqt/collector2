@@ -39,7 +39,7 @@ and generate [ebuild scripts](https://wiki.gentoo.org/wiki/Ebuild).
 ## Online Documentation
 
 You can read more documentation
-[on GitLab pages](https://src_prepare.gitlab.io/racket/racket-overlay/).
+[on GitLab pages](https://src_prepare.gitlab.io/racket/collector2/).
 
 
 # Installation
