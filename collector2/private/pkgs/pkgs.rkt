@@ -29,27 +29,24 @@
  "filter.rkt"
  )
 
-(provide
- pkgs
- )
+(provide (all-defined-out))
 
+
+(define excluded (make-parameter '()))
 
 (define (pkgs)
   (let*
       (
-       [all-pkgs-hash           (all-pkgs)]
-       [pkgs#main-distribution  (filter-tag "main-distribution" all-pkgs-hash)]
-       [pkgs#platformed         (filter pkg-for-arch? (hash-keys all-pkgs-hash))]
-       [hash-remove-main-distribution
-        (lambda (hsh) (hash-purge-pkgs hsh pkgs#main-distribution))]
-       [hash-remove-platformed
-        (lambda (hsh) (hash-purge-pkgs hsh pkgs#platformed))]
+       [all-pkgs-hash      (all-pkgs)]
+       [main-distribution  (filter-tag "main-distribution" all-pkgs-hash)]
+       [platformed         (filter pkg-for-arch? (hash-keys all-pkgs-hash))]
        )
     (~> all-pkgs-hash
         (hash-filter-source _ #rx".*git.*")  ; only URLs containing "git"
         (hash-filter-source _ #rx"^((?!.zip|.tar).)*$")  ; remove archives
-        hash-remove-main-distribution
-        hash-remove-platformed
+        (hash-purge-pkgs _ main-distribution)
+        (hash-purge-pkgs _ platformed)
+        (hash-purge-pkgs-chain _ (excluded))  ; "excluded" is a parameter
         hash-filter-build-success
         hash-remove-missing-dependencies
         )

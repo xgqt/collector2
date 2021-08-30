@@ -57,6 +57,10 @@ The upstream repository can be found on
 
 @itemlist[
  @item{
+  @Flag{e} @nonterm{package} or @DFlag{exclude} @nonterm{package}
+  --- exclude a given package from being generated
+ }
+ @item{
   @Flag{d} @nonterm{directory} or @DFlag{directory} @nonterm{directory}
   --- set the directory for @DFlag{create} to a given @nonterm{directory}
  }

@@ -51,6 +51,13 @@
   (command-line
    #:program "collector2"
 
+   #:multi
+   [("-e" "--exclude")
+    package
+    "Exclude a given package from being generated"
+    (excluded (append (excluded) (list package)))
+    ]
+
    #:once-each
    [("-d" "--directory")
     directory

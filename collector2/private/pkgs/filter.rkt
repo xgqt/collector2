@@ -35,6 +35,7 @@
  hash-filter-build-success
  hash-filter-source
  hash-purge-pkgs
+ hash-purge-pkgs-chain
  hash-remove-missing-dependencies
  pkg-for-arch?
  )
@@ -127,6 +128,20 @@
        )
     (hash-remove-dependencies h hk lst)
     )
+  )
+
+;; Create a hash from HSH where packages matching a package name from LST
+;; are removed from the HSH hash,
+;; also remove packages that depended of removed packages
+(define/contract (hash-purge-pkgs-chain hsh lst)
+  (-> (and/c hash? immutable?) (listof string?)
+      (and/c hash? immutable?))
+  (hash-filter
+   ;; check if any of package dependencies are included in LST
+   (lambda (h) (null? (set-intersect lst (hash-ref h 'dependencies '()))))
+   ;; remove packages with keys matching the ones from LST
+   (hash-remove-keys hsh lst)
+   )
   )
 
 ;; Check if V exist in PKGS

@@ -34,6 +34,7 @@
  )
 
 (provide
+ excluded
  packages
  repository
  )
