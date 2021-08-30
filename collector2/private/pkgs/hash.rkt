@@ -52,10 +52,10 @@
    )
   )
 
+;; Execute `set-subtract', taking LST as second argument,
+;; on the value of KEY from HSH hash
 (define/contract (hash-key-set-subtract hsh key lst)
   (-> (and/c hash? immutable?) any/c list?
       (and/c hash? immutable?))
-  "Execute `set-subtract', taking LST as second argument,
-   on the value of KEY from HSH hash."
   (hash-update hsh key (lambda (ds) (set-subtract ds lst)) '())
   )
