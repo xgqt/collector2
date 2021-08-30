@@ -40,9 +40,9 @@
  )
 
 
+;; Produce a list from HSH containing only packages with a matching TAG
 (define/contract (filter-tag tag hsh)
   (-> string? hash? (listof string?))
-  "Produce a list from HSH containing only packages with a matching TAG."
   (filter string?
           (hash-map hsh
                     (lambda (name data)
@@ -67,9 +67,9 @@
     )
   )
 
+;; Check if a PKG is meant for a specific platform
 (define/contract (pkg-for-arch? pkg)
   (-> string? boolean?)
-  "Check if a PKG is meant for a specific platform."
   (set-member?
    (map (lambda (s) (string-contains? pkg (string-append "-" s)))
         arches)
@@ -97,10 +97,10 @@
   )
 
 
+;; Create a hash from HSH where values of keys from LST have DEPS subtracted
 (define/contract (hash-remove-dependencies hsh lst deps)
   (-> (and/c hash? immutable?) list? list?
       (and/c hash? immutable?))
-  "Create a hash from HSH where values of keys from LST have DEPS subtracted."
   (cond
     [(null? lst)  hsh]
     [else  (hash-remove-dependencies
@@ -114,12 +114,12 @@
     )
   )
 
+;; Create a hash from HSH where packages matching a package name from LST
+;; are removed from the HSH hash and from the dependencies list of
+;; remaining packages
 (define/contract (hash-purge-pkgs hsh lst)
   (-> (and/c hash? immutable?) (listof string?)
       (and/c hash? immutable?))
-  "Create a hash from HSH where packages matching a package name from LST
-   are removed from the HSH hash and from the dependencies list of
-   remaining packages."
   (let*
       (
        [h  (hash-remove-keys hsh lst)]
@@ -129,19 +129,19 @@
     )
   )
 
+;; Check if V exist in PKGS
 (define/contract (dependency-exists v pkgs)
   (-> (or/c list? string?) (listof string?)
       boolean?)
-  "Check if V exist in PKGS."
   (cond
     [(list? v)   (set-member? pkgs (car v))]
     [(string? v) (set-member? pkgs v)]
     )
   )
 
+;; Given HSH return a list of dependencies that do not exist in it
 (define/contract (missing-dependencies hsh)
   (-> (and/c hash? immutable?) list?)
-  "Given HSH return a list of dependencies that do not exist in it."
   (let
       ([md '()])
     (for

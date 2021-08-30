@@ -43,18 +43,18 @@
     )
   )
 
+;; Trim disallowed elements from `url-path' of given STR
 (define/contract (string->repo str)
   (-> string? string?)
-  "Trim disallowed elements from `url-path' of given STR."
   (empty-empty-else
    str
    (remove-branch (trim (url-path str) banned))
    )
   )
 
+;; Extract the "query path" part of a given STR (treating it as a URL)
 (define/contract (query-path url-str)
   (-> string? (or/c string? boolean?))
-  "Extract the \"query path\" part of a given STR (treating it as a URL)."
   (let*
       ([lst (string-split url-str "?path=")])
     (if (equal? (length lst) 2)

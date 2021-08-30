@@ -31,20 +31,20 @@
 (provide (all-defined-out))
 
 
+;; Produce a hash from HSH with keys included in LST removed
 (define/contract (hash-remove-keys hsh lst)
   (-> (and/c hash? immutable?) list? (and/c hash? immutable?))
-  "Produce a hash from HSH with keys included in LST removed."
   (cond
     [(null? lst)  hsh]
     [else  (hash-remove-keys (hash-remove hsh (car lst)) (cdr lst))]
     )
   )
 
+;; Returns hash with the elements of HSH for which PRED produces a true value
+;; The PRED procedure is applied to values of keys in HSH
 (define/contract (hash-filter pred hsh)
   (-> (-> any/c any/c) (and/c hash? immutable?)
       (and/c hash? immutable?))
-  "Returns hash with the elements of HSH for which PRED produces a true value.
-   The PRED procedure is applied to values of keys in HSH."
   (hash-remove-keys
    hsh
    (filter (lambda (key) (not (pred (hash-ref hsh key))))

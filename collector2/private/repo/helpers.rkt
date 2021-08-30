@@ -40,9 +40,9 @@
     )
   )
 
+;; Trim all occurrences of elements in LST from a STR
 (define/contract (trim str lst)
   (-> string? (listof string?) string?)
-  "Trim all occurrences of elements in LST from a STR."
   (cond
     [(empty? lst)  str]
     [(list? lst)
@@ -53,9 +53,9 @@
     )
   )
 
+;; Extract the "path" part of a given STR (treating it as a URL)
 (define/contract (url-path str)
   (-> string? string?)
-  "Extract the \"path\" part of a given STR (treating it as a URL)."
   (empty-empty-else
    str
    (path->string (url->path (string->url str)))
@@ -80,14 +80,14 @@
     )
   )
 
+;; Return a branch from string STR (treat as URL)
 (define/contract (get-branch str)
   (-> string? string?)
-  "Return a branch from string STR (treat as URL)."
   (string-trim (regexp-replace #rx"^[^#]*" str "") "#")
   )
 
+;; Remove STR part after "#" (which indicates the git branch)
 (define/contract (remove-branch str)
   (-> string? string?)
-  "Remove STR part after '#' (which indicates the git branch)."
   (regexp-replace #rx"#.*" str "")
   )
