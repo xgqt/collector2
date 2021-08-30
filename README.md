@@ -31,26 +31,30 @@
 </p>
 
 
-## About
+# About
 
 Parse [Racket packages catalog](https://pkgs.racket-lang.org/)
 and generate [ebuild scripts](https://wiki.gentoo.org/wiki/Ebuild).
 
+## Online Documentation
 
-## Installation
+You can read more documentation
+[on GitLab pages](https://src_prepare.gitlab.io/racket/racket-overlay/).
 
-### From Packages Catalog
+
+# Installation
+
+## From Packages Catalog
 
 ```sh
 raco pkg install collector2
 ```
 
-### From repository
+## From repository
 
 ```sh
 raco pkg install --name collector2
 ```
-
 
 ## Dependencies
 
@@ -59,7 +63,7 @@ raco pkg install --name collector2
 - [threading-lib](https://github.com/lexi-lambda/threading/tree/master/threading-lib)
 
 
-## License
+# License
 
 SPDX-License-Identifier: GPL-3.0-only
 
