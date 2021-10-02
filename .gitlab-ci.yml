@@ -31,7 +31,7 @@ stages:
   - pages
 
 
-image: racket/racket:8.1-full
+image: racket/racket:8.2-full
 
 before_script:
   - apt-get update
