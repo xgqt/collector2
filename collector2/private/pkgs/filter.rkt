@@ -32,10 +32,10 @@
 
 (provide
  filter-tag
- hash-filter-build-success
  hash-filter-source
  hash-purge-pkgs
  hash-purge-pkgs-chain
+ hash-remove-failure
  hash-remove-missing-dependencies
  pkg-for-arch?
  )
@@ -65,8 +65,7 @@
     "win32"
     "x86-64"
     "x86_64"
-    )
-  )
+    ))
 
 ;; Check if a PKG is meant for a specific platform
 (define/contract (pkg-for-arch? pkg)
@@ -79,11 +78,21 @@
   )
 
 
-(define/contract (hash-filter-build-success hsh)
+(define/contract (hash-remove-failure hsh)
   (-> (and/c hash? immutable?) (and/c hash? immutable?))
   (hash-filter
-   (lambda (h) (if (hash-ref (hash-ref h 'build (hash)) 'success-log #f)
-                #t #f))
+   (lambda (h)
+     (let ([build (hash-ref h 'build (hash))])
+       (if (or
+            ;; if there is success-log
+            (hash-ref build 'success-log #f)
+            ;; or both success-log and failure-log are missing
+            (and (not (hash-ref build 'success-log #f))
+               (not (hash-ref build 'failure-log #f)))
+            )
+           #t #f
+           )
+       ))
    hsh
    )
   )
