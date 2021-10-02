@@ -24,6 +24,8 @@
 #lang racket
 
 (require
+ (only-in net/url-structs url-query)
+ (only-in net/url-string string->url)
  "helpers.rkt"
  )
 
@@ -40,8 +42,7 @@
     ;; WORKAROUND: caused by malformed URL:
     "/main" "/master" "/stable"
     "/no-deps" "/pre-6" "/for-v5.3.6"
-    )
-  )
+    ))
 
 ;; Trim disallowed elements from `url-path' of given STR
 (define/contract (string->repo str)
@@ -55,12 +56,10 @@
 ;; Extract the "query path" part of a given STR (treating it as a URL)
 (define/contract (query-path url-str)
   (-> string? (or/c string? boolean?))
-  (let*
-      ([lst (string-split url-str "?path=")])
-    (if (equal? (length lst) 2)
-        (remove-branch (second lst))
-        ;;             ^ get the path
+  (let ([lst (url-query (string->url url-str))])
+    (if (null? lst)
         #f
+        (cdr (car lst))  ; ie.: '((path . "src"))
         )
     )
   )
