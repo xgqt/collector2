@@ -34,14 +34,12 @@
   '(
     "base"
     "counter"
-    "ebuild"
+    "ebuild-lib"
+    "ebuild-templates"
     "threading-lib"
-    )
-  )
+    ))
 (define build-deps
   '(
-    "racket-doc"
     "rackunit-lib"
     "scribble-lib"
-    )
-  )
+    ))
