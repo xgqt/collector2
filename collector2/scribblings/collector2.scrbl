@@ -32,7 +32,7 @@
    )
 
 
-@title{collector2}
+@title{Collector2}
 
 @author[@author+email["Maciej Barć" "xgqt@riseup.net"]]
 
