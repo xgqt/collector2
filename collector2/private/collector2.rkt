@@ -26,8 +26,8 @@
 (require
  racket/contract
  racket/string
- ebuild-lib
- ebuild-templates/gh
+ ebuild
+ ebuild/templates/gh
  "epoch/epoch.rkt"
  "pkgs/pkgs.rkt"
  "repo/repo.rkt"
