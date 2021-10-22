@@ -76,7 +76,7 @@
 
 (define/contract (string->pms-pkg str)
   (-> string? string?)
-  (string-append "dev-racket/" str)
+  (string-append "dev-racket/" (make-valid-name str))
   )
 
 ;; NOTICE:
