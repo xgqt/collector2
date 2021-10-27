@@ -116,8 +116,7 @@
       (set! RDEPEND (unroll-RACKET_DEPEND))
       (set! DEPEND  '("${RDEPEND}"))
       )
-    )
-  )
+    ))
 
 
 (define (packages)
@@ -139,11 +138,10 @@
           [DESCRIPTION
            (make-valid-description name (hash-ref data 'description ""))]
           [RACKET_DEPEND  (hash-ref data 'dependencies '())]
-          [S
-           (cond
-             [(query-path src) => (lambda (s) (string-append "${S}/" s))]
-             [else  #f]
-             )]
+          [S  (cond
+                [(query-path src) => (lambda (s) (string-append "${S}/" s))]
+                [else  #f]
+                )]
           ))}
      {define my-ebuilds
        ;; If "gh_dom" is supported by "gh.eclass" generate both live
@@ -151,8 +149,7 @@
        (let ([live-version-only
               (hash (live-version) (new my-ebuild% [KEYWORDS '()]))])
          (if (regexp-match-exact?
-              #rx".*(bitbucket|codeberg|git.sr.ht|github|gitlab).*" gh_dom
-              )
+              #rx".*(bitbucket|codeberg|git.sr.ht|github|gitlab).*" gh_dom)
              ;; live version + generated from "snapshot"
              (hash-set live-version-only
                        (simple-version snapshot)
@@ -162,8 +159,7 @@
                             ))
              ;; live version only
              live-version-only
-             )
-         )}
+             ))}
      {define my-upstream
        (upstream  ; maintainers changelog doc bugs-to remote-ids
         '() #f #f gh_web
@@ -172,8 +168,7 @@
           [("gitlab.com")  (list (remote-id 'gitlab gh_repo))]
           [else  '()]
           )
-        )
-       }
+        )}
      (new package%
           [CATEGORY  "dev-racket"]
           [PN        (make-valid-name name)]
@@ -181,12 +176,10 @@
           [metadata  (new metadata% [upstream my-upstream])]
           )
      )
-   )
-  )
+   ))
 
 (define (repository)
   (new repository%
        [name "racket-overlay"]
        [packages (packages)]
-       )
-  )
+       ))

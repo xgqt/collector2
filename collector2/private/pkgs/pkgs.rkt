@@ -35,12 +35,11 @@
 (define excluded (make-parameter '()))
 
 (define (pkgs)
-  (let*
-      (
-       [all-pkgs-hash      (all-pkgs)]
-       [main-distribution  (filter-tag "main-distribution" all-pkgs-hash)]
-       [platformed         (filter pkg-for-arch? (hash-keys all-pkgs-hash))]
-       )
+  (let* (
+         [all-pkgs-hash      (all-pkgs)]
+         [main-distribution  (filter-tag "main-distribution" all-pkgs-hash)]
+         [platformed         (filter pkg-for-arch? (hash-keys all-pkgs-hash))]
+         )
     (~> all-pkgs-hash
         (hash-filter-source _ #rx".*git.*")  ; only URLs containing "git"
         (hash-filter-source _ #rx"^((?!.zip|.tar).)*$")  ; remove archives
@@ -50,5 +49,4 @@
         hash-remove-failure
         hash-remove-missing-dependencies
         )
-    )
-  )
+    ))
