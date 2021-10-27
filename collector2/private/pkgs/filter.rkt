@@ -45,16 +45,10 @@
 (define/contract (filter-tag tag hsh)
   (-> string? hash? (listof string?))
   (filter string?
-          (hash-map hsh
-                    (lambda (name data)
-                      (if (member tag (hash-ref data 'tags '()))
-                          name
-                          #f
-                          )
-                      )
-                    )
-          )
-  )
+          (hash-map hsh (lambda (name data)
+                          (if (member tag (hash-ref data 'tags '()))
+                              name  #f)))
+          ))
 
 (define arches
   '(
@@ -74,8 +68,7 @@
    (map (lambda (s) (string-contains? pkg (string-append "-" s)))
         arches)
    #t
-   )
-  )
+   ))
 
 
 (define/contract (hash-remove-failure hsh)
@@ -94,8 +87,7 @@
            )
        ))
    hsh
-   )
-  )
+   ))
 
 
 (define/contract (hash-filter-source hsh rx)
@@ -103,8 +95,7 @@
   (hash-filter
    (lambda (h) (regexp-match-exact? rx (hash-ref h 'source "")))
    hsh
-   )
-  )
+   ))
 
 
 ;; Create a hash from HSH where values of keys from LST have DEPS subtracted
@@ -121,8 +112,7 @@
             (cdr lst)
             deps
             )]
-    )
-  )
+    ))
 
 ;; Create a hash from HSH where packages matching a package name from LST
 ;; are removed from the HSH hash and from the dependencies list of
@@ -136,8 +126,7 @@
        [hk (hash-keys h)]
        )
     (hash-remove-dependencies h hk lst)
-    )
-  )
+    ))
 
 ;; Create a hash from HSH where packages matching a package name from LST
 ;; are removed from the HSH hash,
@@ -150,8 +139,7 @@
    (lambda (h) (null? (set-intersect lst (hash-ref h 'dependencies '()))))
    ;; remove packages with keys matching the ones from LST
    (hash-remove-keys hsh lst)
-   )
-  )
+   ))
 
 ;; Check if V exist in PKGS
 (define/contract (dependency-exists v pkgs)
@@ -160,8 +148,7 @@
   (cond
     [(list? v)   (set-member? pkgs (car v))]
     [(string? v) (set-member? pkgs v)]
-    )
-  )
+    ))
 
 ;; Given HSH return a list of dependencies that do not exist in it
 (define/contract (missing-dependencies hsh)
@@ -174,11 +161,9 @@
           ([dep (hash-ref data 'dependencies '())])
         (when (not (dependency-exists dep (hash-keys hsh)))
           (set! md (cons dep md)))
-        )
-      )
+        ))
     md
-    )
-  )
+    ))
 
 (define/contract (hash-remove-missing-dependencies hsh)
   (-> (and/c hash? immutable?) (and/c hash? immutable?))
