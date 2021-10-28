@@ -26,6 +26,7 @@
 (require
  racket/contract
  racket/string
+ threading
  ebuild
  ebuild/templates/gh
  "epoch/epoch.rkt"
@@ -92,91 +93,136 @@
   )
 
 
-(define ebuild-rkt%
-  (class ebuild-gh%
-    (init-field
-     [RACKET_DEPEND  '()]
-     )
-
-    (define/private (unroll-RACKET_DEPEND)
-      (map racket-pkg->pms-pkg RACKET_DEPEND)
-      )
-
+(define (ebuild-rkt %)
+  (class %
+    (init-field [RACKET_DEPEND '()])
     (super-new
      [EAPI      8]
      [RESTRICT  '("mirror")]
-     [HOMEPAGE  ""]  ; CONSIDER: maybe fix in ebuild-gh class?
      )
-
     (inherit-field inherits DEPEND RDEPEND)
 
     (set! inherits (append '("racket") inherits))
 
+    (define/private (unroll-RACKET_DEPEND)
+      (map racket-pkg->pms-pkg RACKET_DEPEND)
+      )
     (when (not (null? RACKET_DEPEND))
       (set! RDEPEND (unroll-RACKET_DEPEND))
       (set! DEPEND  '("${RDEPEND}"))
       )
     ))
 
+(define ebuild-rkt%
+  (ebuild-rkt ebuild%))
+
+(define ebuild-rkt-gh%
+  (ebuild-rkt ebuild-gh%))
+
+
+(define (make-gh name src data)
+  {define snapshot (epoch->pv (hash-ref data 'last-updated 0))}
+  {define gh_dom   (url-top src)}
+  {define gh_repo  (string->repo src)}
+  {define gh_web   (string-append "https://" gh_dom "/" gh_repo)}
+
+  {define my-ebuild%
+    (class ebuild-rkt-gh%
+      (super-new
+       [GH_DOM         gh_dom]
+       [GH_REPO        gh_repo]
+       [DESCRIPTION    (make-valid-description name (hash-ref data 'description ""))]
+       [HOMEPAGE       ""]  ; ebuild-gh class will set this
+       [RACKET_DEPEND  (hash-ref data 'dependencies '())]
+       [S              (cond
+                         [(query-path src) => (lambda (s) (string-append "${S}/" s))]
+                         [else  #f]
+                         )]
+       ))}
+
+  {define my-ebuilds
+    ;; If "gh_dom" is supported by "gh.eclass" generate both live
+    ;; and non-live, otherwise generate only live
+    (let ([live-version-only
+           (hash (live-version) (new my-ebuild% [KEYWORDS '()]))])
+      (if (regexp-match-exact?
+           #rx".*(bitbucket|codeberg|git.sr.ht|github|gitlab).*" gh_dom)
+          ;; when gh_dom matches ^
+          (hash-set live-version-only  ; live version
+                    (simple-version snapshot)  ; + generated from "snapshot"
+                    (new my-ebuild%
+                         [GH_COMMIT  (hash-ref data 'checksum "")]
+                         [KEYWORDS   '("~amd64")]
+                         ))
+          ;; when it does not match
+          live-version-only  ; live version only
+          ))}
+  {define my-upstream
+    (upstream  ; maintainers changelog doc bugs-to remote-ids
+     '() #f #f gh_web
+     (case gh_dom
+       [("github.com")  (list (remote-id 'github gh_repo))]
+       [("gitlab.com")  (list (remote-id 'gitlab gh_repo))]
+       [else  '()]
+       )
+     )}
+
+  (new package%
+       [CATEGORY  "dev-racket"]
+       [PN        (make-valid-name name)]
+       [ebuilds   my-ebuilds]
+       [metadata  (new metadata% [upstream my-upstream])]
+       )
+  )
+
+;; In case of zip the archive snapshots are not kept,
+;; nor any reference to them (versions/snapshots) is required to exist,
+;; so we can only generate live ebuilds with that zip URL.
+
+(define (zip-body name src)
+  (~> (make-script 1
+                   (format "wget -O \"${T}/~a.zip\" \"~a\"" name src)
+                   (format "unpack \"${T}/~a.zip\"" name)
+                   )
+      (sh-function "src_unpack" _)
+      (sh-function->string _)
+      ))
+
+(define (make-zip name src data)
+  {define homepage
+    (regexp-replace (string-append name ".zip") src "")}
+
+  {define my-ebuild
+    (new ebuild-rkt%
+         [custom         (list (lambda () "PROPERTIES=live"))]
+         [DESCRIPTION    (make-valid-description name (hash-ref data 'description ""))]
+         [HOMEPAGE       homepage]
+         [RACKET_DEPEND  (hash-ref data 'dependencies '())]
+         [SRC_URI        '()]
+         [S              "${WORKDIR}/${PN}"]
+         [KEYWORDS       '("~amd64")]  ; unfortunately many pkgs depend on zips
+         [body           (list (lambda () (zip-body name src)))]
+         )}
+  {define my-upstream
+    (upstream '() #f #f homepage '())}
+
+  (new package%
+       [CATEGORY  "dev-racket"]
+       [PN        (make-valid-name name)]
+       [ebuilds   (hash (live-version) my-ebuild)]
+       [metadata  (new metadata% [upstream my-upstream])]
+       )
+  )
+
 
 (define (packages)
-  (hash-map
-   (pkgs)
-   ;; key - name
-   ;; val - data
-   (lambda (name data)
-     {define src      (hash-ref data 'source "")}
-     {define snapshot (epoch->pv (hash-ref data 'last-updated 0))}
-     {define gh_dom   (url-top src)}
-     {define gh_repo  (string->repo src)}
-     {define gh_web   (string-append "https://" gh_dom "/" gh_repo)}
-     {define my-ebuild%
-       (class ebuild-rkt%
-         (super-new
-          [GH_DOM     gh_dom]
-          [GH_REPO    gh_repo]
-          [DESCRIPTION
-           (make-valid-description name (hash-ref data 'description ""))]
-          [RACKET_DEPEND  (hash-ref data 'dependencies '())]
-          [S  (cond
-                [(query-path src) => (lambda (s) (string-append "${S}/" s))]
-                [else  #f]
-                )]
-          ))}
-     {define my-ebuilds
-       ;; If "gh_dom" is supported by "gh.eclass" generate both live
-       ;; and non-live, otherwise generate only live
-       (let ([live-version-only
-              (hash (live-version) (new my-ebuild% [KEYWORDS '()]))])
-         (if (regexp-match-exact?
-              #rx".*(bitbucket|codeberg|git.sr.ht|github|gitlab).*" gh_dom)
-             ;; live version + generated from "snapshot"
-             (hash-set live-version-only
-                       (simple-version snapshot)
-                       (new my-ebuild%
-                            [GH_COMMIT  (hash-ref data 'checksum "")]
-                            [KEYWORDS   '("~amd64")]
-                            ))
-             ;; live version only
-             live-version-only
-             ))}
-     {define my-upstream
-       (upstream  ; maintainers changelog doc bugs-to remote-ids
-        '() #f #f gh_web
-        (case gh_dom
-          [("github.com")  (list (remote-id 'github gh_repo))]
-          [("gitlab.com")  (list (remote-id 'gitlab gh_repo))]
-          [else  '()]
-          )
-        )}
-     (new package%
-          [CATEGORY  "dev-racket"]
-          [PN        (make-valid-name name)]
-          [ebuilds   my-ebuilds]
-          [metadata  (new metadata% [upstream my-upstream])]
-          )
-     )
-   ))
+  (hash-map (pkgs) (lambda (name data)
+                     {define src (hash-ref data 'source "")}
+                     (if (string-contains? src ".zip")
+                         (make-zip name src data)
+                         (make-gh  name src data)
+                         )
+                     )))
 
 (define (repository)
   (new repository%
