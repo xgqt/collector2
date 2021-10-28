@@ -24,7 +24,6 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   TERM: dumb
-  PACKAGE_DOC_DIR: public
 
 stages:
   - test
@@ -37,32 +36,34 @@ before_script:
   - apt-get update
   - apt-get install -y sqlite3
 
-  - raco pkg install --no-docs mike
   - cd ./src
-  - racket -l mike install clean
+  - make install
 
 
 test:
   stage: test
 
   script:
-    - racket -l mike setup
-    - racket -l mike test
+    - make setup
+    - make test
 
 
 pages:
   stage: pages
+
   only:
     refs:
       - master
     changes:
       - .gitlab-ci.yml
-      - collector2/scribblings/*.scrbl
-      - collector2/scribblings/*/*.scrbl
+      - src/collector2/scribblings/*.scrbl
+      - src/collector2/scribblings/*/*.scrbl
+
   artifacts:
     expire_in: 1 week
     paths:
       - public
 
   script:
-    - racket -l mike docs-html
+    - make docs-html
+    - cp -r ./doc ../public
