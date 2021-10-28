@@ -36,5 +36,6 @@
 \#*
 
 /bin/
+/public
 compiled/
 doc/
