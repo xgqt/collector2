@@ -26,6 +26,7 @@ variables:
   TERM: dumb
 
 stages:
+  - shellcheck
   - test
   - pages
 
@@ -37,6 +38,23 @@ before_script:
   - apt-get install -y sqlite3
 
   - ./scripts/make.sh install
+
+
+shellcheck:
+  stage: shellcheck
+  only:
+    changes:
+      - .gitlab-ci.yml
+      - scripts/*.sh
+
+  image: alpine:latest
+
+  before_script:
+    - apk update
+    - apk add shellcheck
+
+  script:
+    - shellcheck ./scripts/*.sh
 
 
 test:
