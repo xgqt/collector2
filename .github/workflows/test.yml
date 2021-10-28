@@ -46,7 +46,7 @@ jobs:
           version: ${{ matrix.racket-version }}
 
       - name: Instal
-        run: make install
+        run: cd ./src && make install
 
       - name: Setup
         run: make setup

@@ -47,7 +47,7 @@ jobs:
           version: stable
 
       - name: Build docs
-        run: make install docs-html
+        run: cd ./src && make install docs-html
 
       - name: Publish
         uses: peaceiris/actions-gh-pages@v3

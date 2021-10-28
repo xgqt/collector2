@@ -38,6 +38,7 @@ before_script:
   - apt-get install -y sqlite3
 
   - raco pkg install --no-docs mike
+  - cd ./src
   - racket -l mike install clean
 
 
