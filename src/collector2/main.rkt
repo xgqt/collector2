@@ -27,6 +27,7 @@
 (require
  racket/cmdline
  racket/class
+ (only-in racket/string string-join)
  "private/collector2.rkt"
  )
 
@@ -55,7 +56,11 @@
    [("-e" "--exclude")
     package
     "Exclude a given package from being generated"
-    (excluded (append (excluded) (list package)))
+    (let ([valid-name (make-valid-name package)])
+      (excluded (append (excluded)
+                        (if (equal? package valid-name)
+                            (list package) (list package valid-name))
+                        )))
     ]
 
    #:once-each
@@ -79,6 +84,11 @@
    "Copyright (c) 2021, src_prepare group"
    "Licensed under the GNU GPL v3 License"
    )
+
+  (let ([e (excluded)])
+    (when (not (null? e))
+      (printf "Excluding: ~a\n" (string-join e))
+      ))
 
   (case (action)
     [(show)    (action:show)]

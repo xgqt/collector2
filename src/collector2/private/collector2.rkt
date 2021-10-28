@@ -36,6 +36,7 @@
 
 (provide
  excluded
+ make-valid-name
  packages
  repository
  )
