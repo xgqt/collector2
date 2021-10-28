@@ -36,16 +36,15 @@ before_script:
   - apt-get update
   - apt-get install -y sqlite3
 
-  - cd ./src
-  - make install
+  - ./scripts/make.sh install
 
 
 test:
   stage: test
 
   script:
-    - make setup
-    - make test
+    - ./scripts/make.sh setup
+    - ./scripts/make.sh test
 
 
 pages:
@@ -65,5 +64,4 @@ pages:
       - public
 
   script:
-    - make docs-html
-    - cp -r ./doc ../public
+    - ./scripts/public.sh
