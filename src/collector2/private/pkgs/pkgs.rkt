@@ -35,13 +35,15 @@
 (define excluded (make-parameter '()))
 
 (define (pkgs)
-  (let* (
-         [all-pkgs-hash      (all-pkgs)]
-         [main-distribution  (filter-tag "main-distribution" all-pkgs-hash)]
-         [platformed         (filter pkg-for-arch? (hash-keys all-pkgs-hash))]
-         )
+  {define all-pkgs-hash (all-pkgs)}
+  (let (
+        [main-distribution  (filter-tag "main-distribution" all-pkgs-hash)]
+        [main-tests         (filter-tag "main-tests" all-pkgs-hash)]
+        [platformed         (filter pkg-for-arch? (hash-keys all-pkgs-hash))]
+        )
     (~> all-pkgs-hash
         (hash-filter-source _ #rx".*git.*|.*.zip")  ; only git and zip sources
+        (hash-purge-pkgs _ main-tests)
         (hash-purge-pkgs _ main-distribution)
         (hash-purge-pkgs _ platformed)
         (hash-purge-pkgs-chain _ (excluded))  ; "excluded" is a parameter
