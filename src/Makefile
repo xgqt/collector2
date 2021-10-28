@@ -18,7 +18,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 
-PACKAGE-NAME		:= $(shell basename $(abspath .))
+PACKAGE-NAME		:= collector2
 PACKAGE-EXE			:= $(PACKAGE-NAME)
 PACKAGE-BIN-DIR		:= ./bin
 PACKAGE-DOC-DIR		:= ./doc
