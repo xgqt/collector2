@@ -99,11 +99,10 @@
     (init-field [RACKET_DEPEND '()])
     (super-new
      [EAPI      8]
+     [inherits  '("racket")]
      [RESTRICT  '("mirror")]
      )
-    (inherit-field inherits DEPEND RDEPEND)
-
-    (set! inherits (append '("racket") inherits))
+    (inherit-field DEPEND RDEPEND)
 
     (define/private (unroll-RACKET_DEPEND)
       (map racket-pkg->pms-pkg RACKET_DEPEND)
