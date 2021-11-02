@@ -57,6 +57,10 @@ The upstream repository can be found on
 
 @itemlist[
  @item{
+  @Flag{C} @nonterm{url} or @DFlag{catalog} @nonterm{url}
+  --- set the current-pkg-catalogs catalog to be examined
+ }
+ @item{
   @Flag{e} @nonterm{package} or @DFlag{exclude} @nonterm{package}
   --- exclude a given package from being generated
  }
