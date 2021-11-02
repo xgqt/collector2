@@ -24,20 +24,17 @@
 #lang racket/base
 
 (require
- net/url
  pkg/lib
- racket/contract
  )
 
 (provide
- (all-defined-out)
+ all-pkgs
  )
 
 
-(define/contract (all-pkgs)
-  (-> hash?)
-  (parameterize ([current-pkg-catalogs
-                  (list (string->url "https://pkgs.racket-lang.org/"))])
-    (get-all-pkg-details-from-catalogs)
-    )
-  )
+(define (all-pkgs)
+  (let ([hsh (get-all-pkg-details-from-catalogs)])
+    (if (equal? hsh (hash))
+        (error 'ERROR "Empty packages hash")
+        hsh
+        )))

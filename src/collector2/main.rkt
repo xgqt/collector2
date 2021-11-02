@@ -27,6 +27,8 @@
 (require
  racket/cmdline
  racket/class
+ (only-in net/url string->url)
+ (only-in pkg/lib current-pkg-catalogs)
  (only-in racket/string string-join)
  "private/collector2.rkt"
  )
@@ -41,6 +43,11 @@
 
 (define (action:create [root "."])
   (send (repository) save-packages (path->complete-path root))
+  )
+
+
+(define (set-current-pkg-catalogs url-str)
+  (current-pkg-catalogs (list (string->url url-str)))
   )
 
 
@@ -69,6 +76,11 @@
     "Set the directory for \"create\" option"
     (create-directory directory)
     ]
+   [("-C" "--catalog")
+    url
+    "Set the current-pkg-catalogs catalog to be examined"
+    (set-current-pkg-catalogs url)
+    ]
 
    #:once-any
    [("-c" "--create")
@@ -85,6 +97,11 @@
    "Licensed under the GNU GPL v3 License"
    )
 
+  (when (eq? (current-pkg-catalogs) #f)
+    (displayln "Setting \"current-pkg-catalogs\" to \"https://pkgs.racket-lang.org/\"")
+    (set-current-pkg-catalogs "https://pkgs.racket-lang.org/")
+    )
+
   (let ([e (excluded)])
     (when (not (null? e))
       (printf "Excluding: ~a\n" (string-join e))
@@ -94,4 +111,5 @@
     [(show)    (action:show)]
     [(create)  (action:create (create-directory))]
     )
+
   )
