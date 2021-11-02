@@ -1,13 +1,6 @@
 # TODO
 
 
-## Net
-
-report+error:
-- if network is inaccessible ?
-- if we get a empty hash
-
-
 ## Ebuild Generation
 
 ### Variables
