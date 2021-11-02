@@ -94,7 +94,7 @@
   )
 
 
-(define (ebuild-rkt %)
+(define (ebuild-rkt-mixin %)
   (class %
     (init-field [RACKET_DEPEND '()])
     (super-new
@@ -114,10 +114,10 @@
     ))
 
 (define ebuild-rkt%
-  (ebuild-rkt ebuild%))
+  (ebuild-rkt-mixin ebuild%))
 
 (define ebuild-rkt-gh%
-  (ebuild-rkt ebuild-gh%))
+  (ebuild-rkt-mixin ebuild-gh%))
 
 
 (define (make-gh name src data)
