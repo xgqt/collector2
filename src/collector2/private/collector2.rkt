@@ -105,7 +105,7 @@
     (inherit-field DEPEND RDEPEND)
 
     (define/private (unroll-RACKET_DEPEND)
-      (map racket-pkg->pms-pkg RACKET_DEPEND)
+      (sort  (map racket-pkg->pms-pkg RACKET_DEPEND)  string<=?)
       )
     (when (not (null? RACKET_DEPEND))
       (set! RDEPEND (unroll-RACKET_DEPEND))
