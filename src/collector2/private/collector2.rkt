@@ -81,17 +81,13 @@
   (string-append "dev-racket/" (make-valid-name str))
   )
 
-;; NOTICE:
-;; #:version is only useful when we can generate
-;;   ebuilds from versions hash
-
 (define/contract (racket-pkg->pms-pkg arg)
   (-> (or/c string? list?) string?)
   (cond
     [(string? arg) (string->pms-pkg arg)]
+    ;; NOTICE: #:version is probably unnecessary
     [(list? arg)   (string->pms-pkg (car arg))]
-    )
-  )
+    ))
 
 
 (define (ebuild-rkt-mixin %)
