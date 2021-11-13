@@ -121,6 +121,16 @@
   {define gh_dom   (url-top src)}
   {define gh_repo  (string->repo src)}
   {define gh_web   (string-append "https://" gh_dom "/" gh_repo)}
+  {define gh_commit
+    (let (
+          [c1 (~> (hash-ref data 'versions (hash))
+                  (hash-ref _    'default  (hash))
+                  (hash-ref _    'checksum "")
+                  )]
+          [c2 (hash-ref data 'checksum "")]
+          )
+      (if (equal? c1 "")  c2  c1)
+      )}
 
   {define my-ebuild%
     (class ebuild-rkt-gh%
@@ -147,7 +157,7 @@
           (hash-set live-version-only  ; live version
                     (simple-version snapshot)  ; + generated from "snapshot"
                     (new my-ebuild%
-                         [GH_COMMIT  (hash-ref data 'checksum "")]
+                         [GH_COMMIT  gh_commit]
                          [KEYWORDS   '("~amd64")]
                          ))
           ;; when it does not match
@@ -211,14 +221,34 @@
   )
 
 
+;; URLs may contain a placeholder URL with "empty.zip"
+;; (ie.: http://racket-packages.s3-us-west-2.amazonaws.com/pkgs/empty.zip),
+;; this is why we have to find a URL without ".zip" if possible
+
 (define (packages)
-  (hash-map (pkgs) (lambda (name data)
-                     {define src (hash-ref data 'source "")}
-                     (if (string-contains? src ".zip")
-                         (make-zip name src data)
-                         (make-gh  name src data)
-                         )
-                     )))
+  (hash-map
+   (pkgs)
+   (lambda (name data)
+     {define src
+       (let (
+             ;; candidates for source URL
+             [c1  (~> (hash-ref data 'versions (hash))
+                      (hash-ref _    'default  (hash))
+                      (hash-ref _    'source   "")
+                      )]
+             [c2  (hash-ref data 'source "")]
+             )
+         (if (or (string-contains? c1 ".zip") (equal? c1 ""))
+             (if (or (string-contains? c2 ".zip") (equal? c2 ""))
+                 c1  c2)
+             c1
+             )
+         )}
+     (if (string-contains? src ".zip")
+         (make-zip name src data)
+         (make-gh  name src data)
+         )
+     )))
 
 (define (repository)
   (new repository%
