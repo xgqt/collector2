@@ -29,6 +29,9 @@ myroot="$( dirname "${0}" )/../"
 cd "${myroot}/src/"
 
 MAKE="$( command -v gmake || command -v make )"
-[ -z "${MAKE}" ] && exit 1
+if [ -z "${MAKE}" ] ; then
+    echo "No proper MAKE implementation found"
+    exit 1
+fi
 
 ${MAKE} "${@}"
