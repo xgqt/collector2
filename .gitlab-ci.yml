@@ -37,7 +37,7 @@ before_script:
   - apt-get update
   - apt-get install -y sqlite3
 
-  - ./scripts/make.sh install
+  - bash ./scripts/make.sh install
 
 
 shellcheck:
@@ -61,8 +61,8 @@ test:
   stage: test
 
   script:
-    - ./scripts/make.sh setup
-    - ./scripts/make.sh test
+    - bash ./scripts/make.sh setup
+    - bash ./scripts/make.sh test
 
 
 pages:
@@ -82,4 +82,4 @@ pages:
       - public
 
   script:
-    - ./scripts/public.sh
+    - bash ./scripts/public.sh
