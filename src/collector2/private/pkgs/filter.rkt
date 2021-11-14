@@ -32,22 +32,22 @@
 
 (provide
  filter-tag
- filter-verbose?
  hash-filter-failure
  hash-filter-source
  hash-purge-pkgs
  hash-purge-pkgs-chain
  hash-remove-missing-dependencies
  pkg-for-arch?
+ verbose-filter?
  )
 
 
 
-(define filter-verbose?
+(define verbose-filter?
   (make-parameter #f))
 
 (define (filter-print reason pkg-name)
-  (when (filter-verbose?)
+  (when (verbose-filter?)
     (printf "Because of ~a, filtered the package: ~a\n" reason pkg-name)
     ))
 

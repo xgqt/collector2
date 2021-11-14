@@ -88,11 +88,11 @@
     ]
    [("--verbose-filter")
     "Show filtered packages"
-    (filter-verbose? #t)
+    (verbose-filter? #t)
     ]
    [("-v" "--verbose")
     "Increase verbosity (enable other verbosity switches)"
-    (filter-verbose? #t)
+    (verbose-filter? #t)
     (verbose-auto-catalog? #t)
     (verbose-exclude? #t)
     ]

@@ -31,7 +31,7 @@
 
 (provide
  (all-defined-out)
- filter-verbose?
+ verbose-filter?
  )
 
 
