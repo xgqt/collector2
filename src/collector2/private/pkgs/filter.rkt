@@ -47,13 +47,12 @@
   (make-parameter #f))
 
 (define (filter-print reason pkg-name)
-  (printf "Because of ~a, filtered the package: ~a\n" reason pkg-name)
-  )
+  (when (filter-verbose?)
+    (printf "Because of ~a, filtered the package: ~a\n" reason pkg-name)
+    ))
 
 (define (filter-return reason pkg-data-hsh)
-  (when (filter-verbose?)
-    (filter-print reason (hash-ref pkg-data-hsh 'name))
-    )
+  (filter-print reason (hash-ref pkg-data-hsh 'name))
   #f
   )
 
