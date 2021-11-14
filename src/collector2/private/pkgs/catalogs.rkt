@@ -23,48 +23,32 @@
 
 #lang racket/base
 
+(require
+ (only-in net/url string->url)
+ (only-in pkg/lib current-pkg-catalogs)
+ )
 
-(module+ main
-
-  (require
-   racket/cmdline
-   racket/format
-   counter
-   "all.rkt"
-   "catalogs.rkt"
-   "separator.rkt"
-   )
+(provide
+ auto-current-pkg-catalogs
+ set-current-pkg-catalogs
+ )
 
 
-  (auto-current-pkg-catalogs #f)
+;; "nop" is the magic keyword to not modify the `current-pkg-catalogs'
 
-  (command-line
-   #:program "collector2"
+(define (set-current-pkg-catalogs url-str)
+  (case url-str
+    [("auto")   (set-current-pkg-catalogs "https://pkgs.racket-lang.org/")]
+    [("false")  (current-pkg-catalogs #f)]
+    [("nop")    (void)]
+    [else       (current-pkg-catalogs (list (string->url url-str)))]
+    ))
 
-   #:once-each
-   [("-C" "--catalog")
-    url
-    "Set the current-pkg-catalogs catalog to be examined"
-    (set-current-pkg-catalogs url)
-    ]
-
-   #:ps ""
-   "Copyright (c) 2021, src_prepare group"
-   "Licensed under the GNU GPL v3 License"
-   )
-
-  (define cntr (make-counter 0))
-
-  (hash-for-each
-   (all-pkgs)
-   (lambda (name data)
-     (displayln (~a separator             "\n"
-                    "number: " (cntr)     "\n"
-                    "name:   " (~a name)  "\n"
-                    "data:   " (~v data)  "\n"
-                    separator             "\n"
-                    ))
-     )
-   )
-
-  )
+(define (auto-current-pkg-catalogs verbose?)
+  (when (eq? (current-pkg-catalogs) #f)
+    (when verbose?
+      (displayln
+       "Setting \"current-pkg-catalogs\" to \"https://pkgs.racket-lang.org/\"")
+      )
+    (set-current-pkg-catalogs "auto")
+    ))

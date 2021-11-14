@@ -27,10 +27,9 @@
 (require
  racket/cmdline
  racket/class
- (only-in net/url string->url)
- (only-in pkg/lib current-pkg-catalogs)
  (only-in racket/string string-join)
  "private/collector2.rkt"
+ "private/pkgs/catalogs.rkt"
  )
 
 
@@ -46,15 +45,13 @@
   )
 
 
-(define (set-current-pkg-catalogs url-str)
-  (current-pkg-catalogs (list (string->url url-str)))
-  )
-
-
 (module+ main
 
   (define create-directory (make-parameter (current-directory)))
   (define action (make-parameter 'show))
+
+  (define verbose-auto-catalog? (make-parameter #f))
+  (define verbose-exclude? (make-parameter #f))
 
   (command-line
    #:program "collector2"
@@ -81,9 +78,23 @@
     "Set the current-pkg-catalogs catalog to be examined"
     (set-current-pkg-catalogs url)
     ]
-   [("-v" "--verbose")
-    "Increase verbosity (ie.: show filtered packages)"
+   [("--verbose-auto-catalog")
+    "Show if automatically setting the Racket catalogs"
+    (verbose-auto-catalog? #t)
+    ]
+   [("--verbose-exclude")
+    "Show manually excluded packages"
+    (verbose-exclude? #t)
+    ]
+   [("--verbose-filter")
+    "Show filtered packages"
     (filter-verbose? #t)
+    ]
+   [("-v" "--verbose")
+    "Increase verbosity (enable other verbosity switches)"
+    (filter-verbose? #t)
+    (verbose-auto-catalog? #t)
+    (verbose-exclude? #t)
     ]
 
    #:once-any
@@ -101,15 +112,11 @@
    "Licensed under the GNU GPL v3 License"
    )
 
-  (when (eq? (current-pkg-catalogs) #f)
-    (displayln "Setting \"current-pkg-catalogs\" to \"https://pkgs.racket-lang.org/\"")
-    (set-current-pkg-catalogs "https://pkgs.racket-lang.org/")
-    )
+  (auto-current-pkg-catalogs (verbose-auto-catalog?))
 
-  (let ([e (excluded)])
-    (when (not (null? e))
-      (printf "Excluding: ~a\n" (string-join e))
-      ))
+  (when (verbose-exclude?)
+    (printf "Excluding: ~a\n" (string-join (excluded)))
+    )
 
   (case (action)
     [(show)    (action:show)]
