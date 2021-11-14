@@ -47,7 +47,7 @@
         [platformed         (filter pkg-for-arch? (hash-keys all-pkgs-hash))]
         )
     (~> all-pkgs-hash
-        (hash-filter-source _ #rx".*git.*|.*.zip")  ; only git and zip sources
+        (hash-filter-source _ #rx".*git.*|.*.tar.*|.*.zip")
         (hash-purge-pkgs _ main-tests)
         (hash-purge-pkgs _ main-distribution)
         (hash-purge-pkgs _ platformed)

@@ -24,42 +24,75 @@
 #lang racket
 
 (require
- (only-in net/url-structs url-query)
- (only-in net/url-string string->url)
- "helpers.rkt"
+ net/url-string
+ threading
+ (only-in racket/string string-trim)
  )
 
 (provide
- query-path
- string->repo
- url-top
+ (contract-out
+  [query-path  (-> string? (or/c string? boolean?))]
+  [string->repo  (-> string? (or/c string? boolean?))]
+  [url-string->path-string  (-> string? string?)]
+  [url-top  (-> string? string?)]
+  )
  )
 
 
-(define banned
-  '(
-    "/." "/" ".git"
-    ;; WORKAROUND: caused by malformed URL:
-    "/main" "/master" "/stable"
-    "/no-deps" "/pre-6" "/for-v5.3.6"
-    ))
-
-;; Trim disallowed elements from `url-path' of given STR
-(define/contract (string->repo str)
-  (-> string? string?)
-  (empty-empty-else
-   str
-   (remove-branch (trim (url-path str) banned))
-   )
-  )
-
 ;; Extract the "query path" part of a given STR (treating it as a URL)
-(define/contract (query-path url-str)
-  (-> string? (or/c string? boolean?))
+(define (query-path url-str)
   (let ([lst (url-query (string->url url-str))])
     (if (null? lst)
         #f
         (cdr (car lst))  ; ie.: '((path . "src"))
         )
-    )
-  )
+    ))
+
+
+(define banned
+  '(
+    "." ".git"
+    "download"
+    "main" "master"
+    "releases"
+    "stable"
+    "no-deps" "pre-6" "for-v5.3.6"
+    ))
+
+;; Extract the "path" part of a given STR (treating it as a URL)
+(define (url-string->path-string str)
+  (if (equal? str "")
+      ""
+      (path->string (url->path (string->url str)))
+      ))
+
+;; Trim disallowed elements from `url-path' of given STR
+(define (string->repo str)
+  (~> (foldr (lambda (v acc)
+               {define res
+                 (string-split acc (string-append "/" v))}
+               (if (null? res)  ""  (car res))
+               )
+             (url-string->path-string str)
+             banned
+             )
+      (string-trim _ "/")
+      (string-trim _ ".git")
+      ))
+
+
+(define (url-top str)
+  (let*
+      (
+       [u    (string->url str)]
+       [uu   (url-user u)]
+       [uh   (url-host u)]
+       [_up  (url-port u)]
+       [up   (if (integer? _up) (number->string _up) #f)]
+       )
+    (string-append
+     (if uu  (string-append uu "@")  "")  ; user
+     (if uh  uh  "")                      ; host
+     (if up  (string-append ":" up)  "")  ; port
+     )
+    ))

@@ -26,9 +26,10 @@
 (require
  racket/contract
  racket/string
- threading
  ebuild
  ebuild/templates/gh
+ threading
+ upi/basename
  "epoch/epoch.rkt"
  "pkgs/pkgs.rkt"
  "repo/repo.rkt"
@@ -186,38 +187,33 @@
 ;; nor any reference to them (versions/snapshots) is required to exist,
 ;; so we can only generate live ebuilds with that zip URL.
 
-(define (zip-body name src)
-  (~> (make-script 1
-                   (format "wget -O \"${T}/~a.zip\" \"~a\"" name src)
-                   (format "unpack \"${T}/~a.zip\"" name)
-                   )
+(define (archive-body src)
+  (~> (let ([archive (basename src)])
+        (make-script 1
+                     (format "wget -O \"${T}/~a\" \"~a\"" archive src)
+                     (format "unpack \"${T}/~a\"" archive)
+                     ))
       (sh-function "src_unpack" _)
       (sh-function->string _)
       ))
 
-(define (make-zip name src data)
-  {define homepage
-    (regexp-replace (string-append name ".zip") src "")}
-
+(define (make-archive name src data)
   {define my-ebuild
     (new ebuild-rkt%
          [custom         (list (lambda () "PROPERTIES=live"))]
          [DESCRIPTION    (make-valid-description name (hash-ref data 'description ""))]
-         [HOMEPAGE       homepage]
+         [HOMEPAGE       (format "https://pkgs.racket-lang.org/package/~a" name)]
          [RACKET_DEPEND  (hash-ref data 'dependencies '())]
          [SRC_URI        '()]
          [S              "${WORKDIR}/${PN}"]
          [KEYWORDS       '("~amd64")]  ; unfortunately many pkgs depend on zips
-         [body           (list (lambda () (zip-body name src)))]
+         [body           (list (lambda () (archive-body src)))]
          )}
-  {define my-upstream
-    (upstream '() #f #f homepage '())}
-
   (new package%
        [CATEGORY  "dev-racket"]
        [PN        (make-valid-name name)]
        [ebuilds   (hash (live-version) my-ebuild)]
-       [metadata  (new metadata% [upstream my-upstream])]
+       [metadata  (new metadata%)]
        )
   )
 
@@ -225,6 +221,10 @@
 ;; URLs may contain a placeholder URL with "empty.zip"
 ;; (ie.: http://racket-packages.s3-us-west-2.amazonaws.com/pkgs/empty.zip),
 ;; this is why we have to find a URL without ".zip" if possible
+
+(define (archive? str)
+  (list? (regexp-match #rx".*.tar.*|.*.zip$" str))
+  )
 
 (define (packages)
   (hash-map
@@ -239,15 +239,15 @@
                       )]
              [c2  (hash-ref data 'source "")]
              )
-         (if (or (string-contains? c1 ".zip") (equal? c1 ""))
-             (if (or (string-contains? c2 ".zip") (equal? c2 ""))
+         (if (or (archive? c1) (equal? c1 ""))
+             (if (or (archive? c2) (equal? c2 ""))
                  c1  c2)
              c1
              )
          )}
-     (if (string-contains? src ".zip")
-         (make-zip name src data)
-         (make-gh  name src data)
+     (if (string-contains? src "git")
+         (make-gh name src data)
+         (make-archive name src data)
          )
      )))
 

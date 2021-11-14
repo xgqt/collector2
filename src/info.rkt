@@ -37,6 +37,7 @@
     "ebuild-lib"
     "ebuild-templates"
     "threading-lib"
+    "upi-lib"
     ))
 (define build-deps
   '(

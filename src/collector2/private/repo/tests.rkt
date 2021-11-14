@@ -24,27 +24,22 @@
 #lang racket
 
 (require
- "helpers.rkt"
  "repo.rkt"
  )
 
 
 (module+ test
+
   (require rackunit)
 
-  (check-equal? (empty-empty-else "" "")  "")
-  (check-equal? (empty-empty-else "" 1)  "")
-  (check-equal? (empty-empty-else "_" 1)  1)
 
-  (check-equal? (trim "" '())  "")
-  (check-equal? (trim "123sample321" '())  "123sample321")
-  (check-equal? (trim "123sample321" '("1" "2" "3"))  "sample")
-
-  (check-equal? (url-path "")  "")
-  (check-equal? (url-path "http://example.com")  "/")
-  (check-equal? (url-path "http://example.com/")  "/.")
-  (check-equal? (url-path "http://example.com/asd/fgh/jkl")  "/asd/fgh/jkl")
-  (check-equal? (url-path "http://example.com/asd/fgh/jkl/")  "/asd/fgh/jkl/.")
+  (check-equal? (url-string->path-string "")  "")
+  (check-equal? (url-string->path-string "http://example.com")  "/")
+  (check-equal? (url-string->path-string "http://example.com/")  "/.")
+  (check-equal?
+   (url-string->path-string "http://example.com/asd/fgh/jkl")  "/asd/fgh/jkl")
+  (check-equal?
+   (url-string->path-string "http://example.com/asd/fgh/jkl/")  "/asd/fgh/jkl/.")
 
   (check-equal? (url-top "")  "")
   (check-equal? (url-top "example.com")  "")
@@ -67,15 +62,6 @@
   (check-equal? (url-top "http://xyz@example.com:123/")  "xyz@example.com:123")
   (check-equal? (url-top "http://xyz@example.com:123/asd/fgh/jkl")
                 "xyz@example.com:123")
-
-  (check-equal? (get-branch "")  "")
-  (check-equal? (get-branch "fgh/jkl")  "")
-  (check-equal? (get-branch "fgh/jkl#trunk")  "trunk")
-  (check-equal? (get-branch "fgh/jkl#trunk#trash")  "trunk#trash")
-
-  (check-equal? (remove-branch "")  "")
-  (check-equal? (remove-branch "#trunk")  "")
-  (check-equal? (remove-branch "fgh/jkl#trunk")  "fgh/jkl")
 
   (check-equal?
    (string->repo "")
@@ -112,4 +98,5 @@
    (query-path "https://github.com/asd-mirror/asd.git?path=asd/asd-doc/asd-doc#trunk")
    "asd/asd-doc/asd-doc"
    )
+
   )
