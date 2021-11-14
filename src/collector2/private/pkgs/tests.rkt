@@ -30,16 +30,27 @@
 
 
 (define test-hash
-  #hash(
-        ["custom0"  . #hash([source       . "https://gitlab.com/asd/custom0.git"])]
-        ["custom1"  . #hash([tags         . ("main-distribution")])]
-        ["custom2"  . #hash([dependencies . ("custom0" "custom1")]
-                            [tags         . ("main-distribution")])]
-        ["custom3"  . #hash([dependencies . ("custom2")])]
-        ["custom4"  . #hash([dependencies . ("custom3")])]
-        ["custom5"  . #hash([dependencies . ("custom0" "custom5" "none")])]
-        )
-  )
+  (hash
+   "custom0" (hash 'name "custom0"
+                   'source        "https://gitlab.com/asd/custom0.git"
+                   )
+   "custom1" (hash 'name "custom1"
+                   'tags          '("main-distribution")
+                   )
+   "custom2" (hash 'name "custom2"
+                   'dependencies  '("custom0" "custom1")
+                   'tags          '("main-distribution")
+                   )
+   "custom3" (hash 'name "custom3"
+                   'dependencies  '("custom2")
+                   )
+   "custom4" (hash 'name "custom4"
+                   'dependencies  '("custom3")
+                   )
+   "custom5" (hash 'name "custom5"
+                   'dependencies  '("custom0" "custom5" "none")
+                   )
+   ))
 
 (define (numkeys hsh)
   (length (hash-keys hsh))
