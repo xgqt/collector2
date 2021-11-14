@@ -29,10 +29,15 @@
  "filter.rkt"
  )
 
-(provide (all-defined-out))
+(provide
+ (all-defined-out)
+ filter-verbose?
+ )
 
 
-(define excluded (make-parameter '()))
+(define excluded
+  (make-parameter '()))
+
 
 (define (pkgs)
   {define all-pkgs-hash (all-pkgs)}

@@ -81,6 +81,10 @@
     "Set the current-pkg-catalogs catalog to be examined"
     (set-current-pkg-catalogs url)
     ]
+   [("-v" "--verbose")
+    "Increase verbosity (ie.: show filtered packages)"
+    (filter-verbose? #t)
+    ]
 
    #:once-any
    [("-c" "--create")

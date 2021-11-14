@@ -32,6 +32,7 @@
 
 (provide
  filter-tag
+ filter-verbose?
  hash-filter-source
  hash-purge-pkgs
  hash-purge-pkgs-chain
@@ -39,6 +40,22 @@
  hash-remove-missing-dependencies
  pkg-for-arch?
  )
+
+
+
+(define filter-verbose?
+  (make-parameter #f))
+
+(define (filter-print reason pkg-name)
+  (printf "Because of ~a, filtered the package: ~a\n" reason pkg-name)
+  )
+
+(define (filter-return reason pkg-data-hsh)
+  (when (filter-verbose?)
+    (filter-print reason (hash-ref pkg-data-hsh 'name))
+    )
+  #f
+  )
 
 
 ;; Produce a list from HSH containing only packages with a matching TAG
@@ -83,9 +100,9 @@
             (and (not (hash-ref build 'success-log #f))
                (not (hash-ref build 'failure-log #f)))
             )
-           #t #f
-           )
-       ))
+           #t
+           (filter-return "build failure" h)
+           )))
    hsh
    ))
 
@@ -93,7 +110,10 @@
 (define/contract (hash-filter-source hsh rx)
   (-> (and/c hash? immutable?) regexp? (and/c hash? immutable?))
   (hash-filter
-   (lambda (h) (regexp-match-exact? rx (hash-ref h 'source "")))
+   (lambda (h)
+     (if (regexp-match-exact? rx (hash-ref h 'source ""))
+         #t  (filter-return "wrong source URL" h)
+         ))
    hsh
    ))
 
@@ -120,6 +140,7 @@
 (define/contract (hash-purge-pkgs hsh lst)
   (-> (and/c hash? immutable?) (listof string?)
       (and/c hash? immutable?))
+  (for-each (lambda (pkg-name) (filter-print "hash-purge-pkgs" pkg-name)) lst)
   (let*
       (
        [h  (hash-remove-keys hsh lst)]
@@ -136,7 +157,10 @@
       (and/c hash? immutable?))
   (hash-filter
    ;; check if any of package dependencies are included in LST
-   (lambda (h) (null? (set-intersect lst (hash-ref h 'dependencies '()))))
+   (lambda (h)
+     (if (null? (set-intersect lst (hash-ref h 'dependencies '())))
+         #t (filter-return "hash-purge-pkgs-chain" h)
+         ))
    ;; remove packages with keys matching the ones from LST
    (hash-remove-keys hsh lst)
    ))

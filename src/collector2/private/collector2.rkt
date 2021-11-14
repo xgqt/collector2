@@ -36,6 +36,7 @@
 
 (provide
  excluded
+ filter-verbose?
  make-valid-name
  packages
  repository
