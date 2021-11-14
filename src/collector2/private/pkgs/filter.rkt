@@ -33,10 +33,10 @@
 (provide
  filter-tag
  filter-verbose?
+ hash-filter-failure
  hash-filter-source
  hash-purge-pkgs
  hash-purge-pkgs-chain
- hash-remove-failure
  hash-remove-missing-dependencies
  pkg-for-arch?
  )
@@ -88,7 +88,7 @@
    ))
 
 
-(define/contract (hash-remove-failure hsh)
+(define/contract (hash-filter-failure hsh)
   (-> (and/c hash? immutable?) (and/c hash? immutable?))
   (hash-filter
    (lambda (h)

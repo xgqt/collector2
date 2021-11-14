@@ -52,7 +52,7 @@
         (hash-purge-pkgs _ main-distribution)
         (hash-purge-pkgs _ platformed)
         (hash-purge-pkgs-chain _ (excluded))  ; "excluded" is a parameter
-        hash-remove-failure
+        hash-filter-failure
         hash-remove-missing-dependencies
         )
     ))
