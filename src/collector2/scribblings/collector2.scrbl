@@ -67,7 +67,8 @@ The upstream repository can be found on
  @item{
   @Flag{d} @nonterm{directory} or @DFlag{directory} @nonterm{directory}
   --- set the directory for @DFlag{create} to a given @nonterm{directory}
- }
+  }
+
  @item{
   @Flag{c} or @DFlag{create}
   --- create ebuilds in a directory (default to the current directory),
@@ -76,7 +77,25 @@ The upstream repository can be found on
  @item{
   @Flag{s} or @DFlag{show}
   --- dump ebuilds to standard out, do not write to the disk
- }
+  }
+
+ @item{
+  @DFlag{verbose-auto-catalog}
+  --- show if automatically setting the Racket catalogs
+  }
+ @item{
+  @DFlag{verbose-exclude}
+  --- show manually excluded packages
+  }
+ @item{
+  @DFlag{verbose-filter}
+  --- show filtered packages
+  }
+ @item{
+  @Flag{v} or @DFlag{verbose}
+  --- increase verbosity (enable other verbosity switches)
+  }
+
  @item{
   @Flag{h} or @DFlag{help}
   --- show help information with usage options
