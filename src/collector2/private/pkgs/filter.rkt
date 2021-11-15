@@ -70,11 +70,11 @@
   '(
     "aarch64"
     "i386"
-    "linux-natipkg"
+    "linux" "linux-natipkg"
+    "osx"
     "ppc"
-    "win32"
-    "x86-64"
-    "x86_64"
+    "win32" "windows"
+    "x86-64" "x86_64"
     ))
 
 ;; Check if a PKG is meant for a specific platform
