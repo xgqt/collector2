@@ -62,7 +62,7 @@ Quick install using Make
 
 - [counter](https://gitlab.com/xgqt/scheme-counter)
 - [ebuild](https://gitlab.com/xgqt/racket-ebuild)
-- [threading-lib](https://github.com/lexi-lambda/threading/tree/master/threading-lib)
+- [threading](https://github.com/lexi-lambda/threading)
 - [upi](https://gitlab.com/xgqt/upi)
 
 
