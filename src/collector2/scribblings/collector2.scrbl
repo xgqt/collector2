@@ -32,11 +32,20 @@
    )
 
 
+@(define (link2overlay pth)
+  {define overlay
+    "https://gitlab.com/src_prepare/racket/racket-overlay/-/tree/master/"}
+  (link (string-append overlay pth) pth)
+  )
+
+
 @title{Collector2}
 
 @author[@author+email["Maciej Barć" "xgqt@riseup.net"]]
 
 @table-of-contents[]
+
+@index-section[]
 
 
 @section{About}
@@ -100,4 +109,19 @@ The upstream repository can be found on
   @Flag{h} or @DFlag{help}
   --- show help information with usage options
  }
+ ]
+
+
+@section{Repository generation}
+
+@subsection{Missing files}
+
+Collector2 only generates packages in the "dev-racket" category,
+so to get a functional repository out of collector2's output you have
+to also add in some files:
+@itemlist[
+ @item{@link2overlay{eclass}es used by generated ebuilds}
+ @item{@link2overlay{profiles/categories}}
+ @item{@link2overlay{profiles/repo_name}}
+ @item{@link2overlay{metadata/layout.conf}}
  ]
