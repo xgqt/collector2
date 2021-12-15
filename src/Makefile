@@ -38,7 +38,7 @@ RUN-FLAGS			:=
 SCRBL-FLAGS			:= --dest $(PACKAGE-DOC-DIR) ++main-xref-in
 EXE-FLAGS			:= --orig-exe -v -o $(PACKAGE-BIN)
 DO-DOCS				:= --no-docs
-INSTALL-FLAGS		:= --auto $(DO-DOCS)
+INSTALL-FLAGS		:= --auto --skip-installed $(DO-DOCS)
 DEPS-FLAGS			:= --check-pkg-deps --unused-pkg-deps
 TEST-FLAGS			:= --heartbeat --no-run-if-absent --submodule test --table
 
