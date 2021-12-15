@@ -34,4 +34,4 @@ if [ -z "${MAKE}" ] ; then
     exit 1
 fi
 
-${MAKE} "${@}"
+exec ${MAKE} "${@}"
