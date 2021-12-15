@@ -57,6 +57,11 @@ purge:
 	$(MAKE) src-make WHAT=purge
 
 
+exe:
+	$(MAKE) src-make WHAT=exe
+	cp -r ./src/bin .
+
+
 public:
 	$(SH) ./scripts/public.sh
 
