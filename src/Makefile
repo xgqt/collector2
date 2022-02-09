@@ -18,29 +18,29 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 
-PACKAGE-NAME		:= collector2
-PACKAGE-EXE			:= $(PACKAGE-NAME)
-PACKAGE-BIN-DIR		:= ./bin
-PACKAGE-DOC-DIR		:= ./doc
-PACKAGE-SCRBL		:= $(PACKAGE-NAME)/scribblings/$(PACKAGE-NAME).scrbl
-PACKAGE-BIN			:= $(PACKAGE-BIN-DIR)/$(PACKAGE-EXE)
-PACKAGE-ZIP			:= $(PACKAGE-NAME).zip
+PACKAGE-NAME    := collector2
+PACKAGE-EXE     := $(PACKAGE-NAME)
+PACKAGE-BIN-DIR := ./bin
+PACKAGE-DOC-DIR := ./doc
+PACKAGE-SCRBL   := $(PACKAGE-NAME)/scribblings/$(PACKAGE-NAME).scrbl
+PACKAGE-BIN     := $(PACKAGE-BIN-DIR)/$(PACKAGE-EXE)
+PACKAGE-ZIP     := $(PACKAGE-NAME).zip
 
-LN					:= ln -fs
-MKDIR				:= mkdir -p
-RACKET				:= racket
-RACO				:= raco
-SCRBL				:= $(RACO) scribble
+LN              := ln -fs
+MKDIR           := mkdir -p
+RACKET          := racket
+RACO            := raco
+SCRBL           := $(RACO) scribble
 
-ENTRYPOINT			:= $(PACKAGE-NAME)/main.rkt
-COMPILE-FLAGS		:= -v
-RUN-FLAGS			:=
-SCRBL-FLAGS			:= --dest $(PACKAGE-DOC-DIR) ++main-xref-in
-EXE-FLAGS			:= --orig-exe -v -o $(PACKAGE-BIN)
-DO-DOCS				:= --no-docs
-INSTALL-FLAGS		:= --auto --skip-installed $(DO-DOCS)
-DEPS-FLAGS			:= --check-pkg-deps --unused-pkg-deps
-TEST-FLAGS			:= --heartbeat --no-run-if-absent --submodule test --table
+ENTRYPOINT      := $(PACKAGE-NAME)/main.rkt
+COMPILE-FLAGS   := -v
+RUN-FLAGS       :=
+SCRBL-FLAGS     := --dest $(PACKAGE-DOC-DIR) ++main-xref-in
+EXE-FLAGS       := --orig-exe -v -o $(PACKAGE-BIN)
+DO-DOCS         := --no-docs
+INSTALL-FLAGS   := --auto --skip-installed $(DO-DOCS)
+DEPS-FLAGS      := --check-pkg-deps --unused-pkg-deps
+TEST-FLAGS      := --heartbeat --no-run-if-absent --submodule test --table
 
 
 all:				install setup test

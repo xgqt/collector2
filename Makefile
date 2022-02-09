@@ -18,11 +18,11 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 
-MAKE		:= make
-SH			:= sh
+MAKE        := make
+SH          := sh
 
 # For recursive calls
-WHAT		:=
+WHAT        :=
 
 
 .PHONY: all src-make clean compile install setup test remove purge
