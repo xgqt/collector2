@@ -16,7 +16,7 @@
 # along with collector2.  If not, see <https://www.gnu.org/licenses/>.
 
 # Original author: Maciej Barć <xgqt@riseup.net>
-# Copyright (c) 2021, src_prepare group
+# Copyright (c) 2021-2022, src_prepare group
 # Licensed under the GNU GPL v3 License
 # SPDX-License-Identifier: GPL-3.0-only
 

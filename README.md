@@ -85,5 +85,5 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with collector2.  If not, see <https://www.gnu.org/licenses/>.
 
-Copyright (c) 2021, src_prepare group
+Copyright (c) 2021-2022, src_prepare group
 Licensed under the GNU GPL v3 License
