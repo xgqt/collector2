@@ -47,11 +47,11 @@
         [platformed         (filter pkg-for-arch? (hash-keys all-pkgs-hash))]
         )
     (~> all-pkgs-hash
-        (hash-filter-source _ #rx".*git.*|.*.tar.*|.*.zip")
-        (hash-purge-pkgs _ main-tests)
-        (hash-purge-pkgs _ main-distribution)
-        (hash-purge-pkgs _ platformed)
-        (hash-purge-pkgs-chain _ (excluded))  ; "excluded" is a parameter
+        (hash-filter-source #rx".*git.*|.*.tar.*|.*.zip")
+        (hash-purge-pkgs main-tests)
+        (hash-purge-pkgs main-distribution)
+        (hash-purge-pkgs platformed)
+        (hash-purge-pkgs-chain (excluded))  ; "excluded" is a parameter
         hash-filter-failure
         hash-remove-missing-dependencies
         )
