@@ -34,6 +34,9 @@
  )
 
 
+(define default-pkg-catalog
+  "https://pkgs.racket-lang.org/")
+
 ;; "nop" is the magic keyword to not modify the `current-pkg-catalogs'
 
 (define (set-current-pkg-catalogs url-str)
@@ -44,11 +47,13 @@
     [else       (current-pkg-catalogs (list (string->url url-str)))]
     ))
 
-(define (auto-current-pkg-catalogs verbose?)
-  (when (eq? (current-pkg-catalogs) #f)
-    (when verbose?
-      (displayln
-       "Setting \"current-pkg-catalogs\" to \"https://pkgs.racket-lang.org/\"")
-      )
-    (set-current-pkg-catalogs "auto")
+(define (auto-current-pkg-catalogs [verbose? #t])
+  (cond
+    [(current-pkg-catalogs)
+     (when verbose?
+       (displayln "\"current-pkg-catalogs\" is non-false, leaving as-is"))]
+    [else
+     (when verbose?
+       (printf "Setting \"current-pkg-catalogs\" to ~v\n" default-pkg-catalog))
+     (set-current-pkg-catalogs "auto")]
     ))
