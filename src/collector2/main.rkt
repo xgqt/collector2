@@ -36,8 +36,7 @@
 (define (action:show)
   {define r (repository)}
   (send r show)
-  (displayln (string-append "\n" ">>> Packages generated: "
-                            (number->string (length (get-field packages r)))))
+  (printf "\n>>> Packages generated:~a\n" (length (get-field packages r)))
   )
 
 (define (action:create [root "."])
