@@ -161,16 +161,22 @@
           ))
        (lambda ()
          (~>>
+          (make-script 1
+                       "if has_version \"dev-scheme/racket\" && racket-where \"${RACKET_PN}\" ; then"
+                       (format "\traco_remove \"${RACKET_PN}\" ~a" AUX_PKG)
+                       "fi"
+                       )
+          (sh-function "pkg_prerm")
+          sh-function->string
+          ))
+       (lambda ()
+         (~>>
           (make-script
            1
            "raco_system_install"
            ""
-           (format "if has_version ~a ; then" (racket-pkg->pms-pkg AUX_PKG))
-           (make-script 1
-                        (format "raco_system_setup ~a" AUX_PKG)
-                        "raco_system_setup"
-                        )
-           "fi"
+           (format "has_version ~a &&" (racket-pkg->pms-pkg AUX_PKG))
+           (format "\traco_system_setup \"${RACKET_PN}\" ~a" AUX_PKG)
            )
           (sh-function "pkg_postinst")
           sh-function->string
@@ -357,7 +363,7 @@
            )
          )}
      (cond
-       [circular
+       [(and circular (string-contains? src "git"))
         {define aux-data
           (hash-ref apkgs circular (hash))}
         (make-cir name src data circular (data->src aux-data) aux-data)]
