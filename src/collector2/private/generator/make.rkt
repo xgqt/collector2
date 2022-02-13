@@ -73,6 +73,7 @@
       (regexp-replace "git://" _ "https://")
       (regexp-replace #rx"\\?[a-z]+=.*" _ "")
       (regexp-replace #rx"#.*" _ "")
+      (regexp-replace ".git$" _ "")
       ))
 
 
