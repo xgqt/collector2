@@ -154,7 +154,8 @@
       (super-new
        [GH_DOM         gh_dom]
        [GH_REPO        gh_repo]
-       [DESCRIPTION    (make-valid-description name (hash-ref data 'description ""))]
+       [DESCRIPTION    (make-valid-description
+                        name (hash-ref data 'description ""))]
        [HOMEPAGE       ""]  ; ebuild-gh class will set this
        [RACKET_DEPEND  (hash-ref data 'dependencies '())]
        [S              (cond
