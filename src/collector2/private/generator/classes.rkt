@@ -107,8 +107,7 @@
            (format "pushd \"${WORKDIR}/~a-${AUX_PH}/~a\" >/dev/null || die"
                    (basename AUX_URI) AUX_S)
            (format "raco_bare_install user ~a" AUX_PKG)
-           "popd >/dev/null || die"
-           ""
+           "popd >/dev/null || die\n"
            "racket_src_compile"
            )
           (sh-function "src_compile")
@@ -128,8 +127,7 @@
          (~>>
           (make-script
            1
-           "raco_system_install"
-           ""
+           "raco_system_install\n"
            (format "has_version ~a &&" (racket-pkg->pms-pkg AUX_PKG))
            (format "\traco_system_setup \"${RACKET_PN}\" ~a" AUX_PKG)
            )
