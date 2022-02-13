@@ -28,7 +28,8 @@
  racket/cmdline
  racket/class
  (only-in racket/string string-join)
- "private/collector2.rkt"
+ "private/generator/generator.rkt"
+ "private/generator/name.rkt"
  "private/pkgs/catalogs.rkt"
  )
 
@@ -63,8 +64,7 @@
       (excluded (append (excluded)
                         (if (equal? package valid-name)
                             (list package) (list package valid-name))
-                        )))
-    ]
+                        )))]
 
    #:once-each
    [("-d" "--directory")
