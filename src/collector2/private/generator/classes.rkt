@@ -100,7 +100,6 @@
       (list
        (~>>
         (make-script
-         1
          (format "pushd \"${WORKDIR}/~a-${AUX_PH}/~a\" >/dev/null || die"
                  (basename AUX_URI) AUX_S)
          (format "raco_bare_install user ~a" AUX_PKG)
@@ -111,17 +110,16 @@
         sh-function->string
         )
        (~>>
-        (make-script 1
-                     "if has_version \"dev-scheme/racket\" && racket-where \"${RACKET_PN}\" ; then"
-                     (format "\traco_remove \"${RACKET_PN}\" ~a" AUX_PKG)
-                     "fi"
-                     )
+        (make-script
+         "if has_version \"dev-scheme/racket\" && racket-where \"${RACKET_PN}\" ; then"
+         (format "\traco_remove \"${RACKET_PN}\" ~a" AUX_PKG)
+         "fi"
+         )
         (sh-function "pkg_prerm")
         sh-function->string
         )
        (~>>
         (make-script
-         1
          "raco_system_install\n"
          (format "has_version ~a &&" (racket-pkg->pms-pkg AUX_PKG))
          (format "\traco_system_setup \"${RACKET_PN}\" ~a" AUX_PKG)
