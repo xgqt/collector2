@@ -26,7 +26,7 @@
 
 (define pkg-authors '(xgqt))
 (define pkg-desc "Parse Racket catalogs and generate ebuild scripts")
-(define version "5.0.0")
+(define version "5.0.1")
 
 (define collection 'multi)
 
