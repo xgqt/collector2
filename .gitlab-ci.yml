@@ -47,7 +47,7 @@ shellcheck:
       - .gitlab-ci.yml
       - scripts/*.sh
 
-  image: alpine:latest
+  image: alpine:3.15.0
 
   before_script:
     - apk update
