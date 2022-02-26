@@ -24,7 +24,6 @@
 #lang racket/base
 
 (require
- racket/contract
  racket/string
  ebuild
  threading
@@ -42,8 +41,7 @@
  )
 
 
-(define/contract (get-commit-hash data)
-  (-> hash? string?)
+(define (get-commit-hash data)
   (let ([c1 (~> data
                 (hash-ref 'versions (hash))
                 (hash-ref 'default  (hash))
@@ -53,8 +51,7 @@
     (if (equal? c1 "")  c2  c1)
     ))
 
-(define/contract (make-valid-description name description)
-  (-> string? string? string?)
+(define (make-valid-description name description)
   (if (or
        ;; empty
        (equal? "" description)
