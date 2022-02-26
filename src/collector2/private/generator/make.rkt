@@ -83,8 +83,7 @@
 
 (define (archive-body src)
   (~>> (let ([archive (basename src)])
-         (make-script 1
-                      (format "wget -O \"${T}/~a\" \"~a\"" archive src)
+         (make-script (format "wget -O \"${T}/~a\" \"~a\"" archive src)
                       (format "unpack \"${T}/~a\"" archive)
                       ))
        (sh-function "src_unpack")
