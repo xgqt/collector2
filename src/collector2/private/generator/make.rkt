@@ -111,86 +111,88 @@
 
 
 (define (make-cir main-name main-src main-data aux-name aux-src aux-data)
-  {define main-snapshot (epoch->pv (hash-ref main-data 'last-updated 0))}
-  ;; {define aux-snapshot  (epoch->pv (hash-ref aux-data  'last-updated 0))}
-  {define ebuild
-    (new ebuild-rkt-cir%
-         [MAIN_URI (normalize-url-string main-src)]
-         [MAIN_PH (get-commit-hash main-data)]
-         [MAIN_S (or (query-path main-src) "")]
-         [AUX_URI (normalize-url-string aux-src)]
-         [AUX_PH (get-commit-hash aux-data)]
-         [AUX_S (or (query-path aux-src) "")]
-         [AUX_PKG aux-name]
-         [RACKET_DEPEND (remove aux-name  ; dep we want to rm might be a list
-                                (~>> main-data
-                                     (hash-ref _ 'dependencies '())
-                                     (map (lambda (v) (if (list? v) (car v) v)))
-                                     ))]
-         [DESCRIPTION
-          (make-valid-description
-           main-name (hash-ref main-data 'description ""))]
-         [HOMEPAGE
-          (format "https://pkgs.racket-lang.org/package/~a" main-name)]
-         )}
-  (new package%
-       [CATEGORY  "dev-racket"]
-       [PN        (make-valid-name main-name)]
-       ;; FIXME: handle no commit hash? & pick higher snapshot?
-       [ebuilds   (hash (simple-version main-snapshot) ebuild)]
-       [metadata  (new metadata%)]
-       ))
+  (let* ([main-snapshot  (epoch->pv (hash-ref main-data 'last-updated 0))]
+         [ebuild
+          (new ebuild-rkt-cir%
+               [MAIN_URI  (normalize-url-string main-src)]
+               [MAIN_PH   (get-commit-hash main-data)]
+               [MAIN_S    (or (query-path main-src) "")]
+               [AUX_URI   (normalize-url-string aux-src)]
+               [AUX_PH    (get-commit-hash aux-data)]
+               [AUX_S     (or (query-path aux-src) "")]
+               [AUX_PKG   aux-name]
+               [RACKET_DEPEND
+                (remove aux-name  ; dep we want to rm might be a list
+                        (~>> main-data
+                             (hash-ref _ 'dependencies '())
+                             (map (lambda (v) (if (list? v) (car v) v)))
+                             ))]
+               [DESCRIPTION
+                (make-valid-description
+                 main-name (hash-ref main-data 'description ""))]
+               [HOMEPAGE
+                (format "https://pkgs.racket-lang.org/package/~a" main-name)]
+               )])
+
+    (new package%
+         [CATEGORY  "dev-racket"]
+         [PN        (make-valid-name main-name)]
+         ;; FIXME: handle no commit hash? & pick higher snapshot?
+         [ebuilds   (hash (simple-version main-snapshot) ebuild)]
+         [metadata  (new metadata%)]
+         )))
 
 
 (define (make-gh name src data)
-  {define snapshot (epoch->pv (hash-ref data 'last-updated 0))}
-  {define gh_dom   (url-top src)}
-  {define gh_repo  (string->repo src)}
-  {define gh_web   (string-append "https://" gh_dom "/" gh_repo)}
-  {define gh_commit (get-commit-hash data)}
-  {define my-ebuild%
-    (class ebuild-rkt-gh%
-      (super-new
-       [GH_DOM         gh_dom]
-       [GH_REPO        gh_repo]
-       [DESCRIPTION    (make-valid-description
-                        name (hash-ref data 'description ""))]
-       [HOMEPAGE       ""]  ; ebuild-gh class will set this
-       [RACKET_DEPEND  (hash-ref data 'dependencies '())]
-       [S              (cond
-                         [(query-path src) => (lambda (s) (string-append "${S}/" s))]
-                         [else  #f]
-                         )]
-       ))}
-  {define my-ebuilds
-    ;; If "gh_dom" is supported by "gh.eclass" generate both live
-    ;; and non-live, otherwise generate only live
-    (let ([live-version-only
-           (hash (live-version) (new my-ebuild% [KEYWORDS '()]))])
-      (if (regexp-match-exact?
-           #rx".*(bitbucket|codeberg|git.sr.ht|github|gitlab).*" gh_dom)
-          ;; when gh_dom matches ^
-          (hash-set live-version-only  ; live version
-                    (simple-version snapshot)  ; + generated from "snapshot"
-                    (new my-ebuild%
-                         [GH_COMMIT  gh_commit]
-                         [KEYWORDS   '("~amd64")]
-                         ))
-          ;; when it does not match
-          live-version-only  ; live version only
-          ))}
-  {define my-upstream
-    (upstream  ; maintainers changelog doc bugs-to remote-ids
-     '() #f #f gh_web
-     (case gh_dom
-       [("github.com")  (list (remote-id 'github gh_repo))]
-       [("gitlab.com")  (list (remote-id 'gitlab gh_repo))]
-       [else  '()]
-       )
-     )}
-  (new package%
-       [CATEGORY  "dev-racket"]
-       [PN        (make-valid-name name)]
-       [ebuilds   my-ebuilds]
-       [metadata  (new metadata% [upstream my-upstream])]
-       ))
+  (let* ([snapshot   (epoch->pv (hash-ref data 'last-updated 0))]
+         [gh_dom     (url-top src)]
+         [gh_repo    (string->repo src)]
+         [gh_web     (string-append "https://" gh_dom "/" gh_repo)]
+         [gh_commit  (get-commit-hash data)]
+         [my-ebuild%
+          (class ebuild-rkt-gh%
+            (super-new
+             [GH_DOM   gh_dom]
+             [GH_REPO  gh_repo]
+             [DESCRIPTION
+              (make-valid-description name (hash-ref data 'description ""))]
+             [HOMEPAGE  ""]  ; ebuild-gh class will set this
+             [RACKET_DEPEND  (hash-ref data 'dependencies '())]
+             [S
+              (cond
+                [(query-path src) => (lambda (s) (string-append "${S}/" s))]
+                [else  #f]
+                )]
+             ))]
+         [my-ebuilds
+          ;; If "gh_dom" is supported by "gh.eclass" generate both live
+          ;; and non-live, otherwise generate only live
+          (let ([live-version-only
+                 (hash (live-version) (new my-ebuild% [KEYWORDS '()]))])
+            (if (regexp-match-exact?
+                 #rx".*(bitbucket|codeberg|git.sr.ht|github|gitlab).*" gh_dom)
+                ;; when gh_dom matches ^
+                (hash-set live-version-only  ; live version
+                          (simple-version snapshot)  ; + generated from "snapshot"
+                          (new my-ebuild%
+                               [GH_COMMIT  gh_commit]
+                               [KEYWORDS   '("~amd64")]
+                               ))
+                ;; when it does not match
+                live-version-only  ; live version only
+                ))]
+         [my-upstream
+          (upstream
+           '() #f #f gh_web
+           (case gh_dom
+             [("github.com")  (list (remote-id 'github gh_repo))]
+             [("gitlab.com")  (list (remote-id 'gitlab gh_repo))]
+             [else  '()]
+             )
+           )])
+    (new package%
+         [CATEGORY  "dev-racket"]
+         [PN        (make-valid-name name)]
+         [ebuilds   my-ebuilds]
+         [metadata  (new metadata% [upstream my-upstream])]
+         )))
