@@ -110,20 +110,19 @@
         sh-function->string
         )
        (~>>
-        (make-script
-         "if has_version \"dev-scheme/racket\" && racket-where \"${RACKET_PN}\" ; then"
-         (format "\traco_remove \"${RACKET_PN}\" ~a" AUX_PKG)
-         "fi"
-         )
+        (make-script #<<EOF
+if has_version "dev-scheme/racket" && racket-where "${RACKET_PN}" ; then
+EOF
+                     (format "\traco_remove \"${RACKET_PN}\" ~a" AUX_PKG)
+                     "fi")
         (sh-function "pkg_prerm")
         sh-function->string
         )
        (~>>
-        (make-script
-         "raco_system_install\n"
-         (format "has_version ~a &&" (racket-pkg->pms-pkg AUX_PKG))
-         (format "\traco_system_setup \"${RACKET_PN}\" ~a" AUX_PKG)
-         )
+        (make-script "raco_system_install\n"
+                     (format "has_version ~a &&" (racket-pkg->pms-pkg AUX_PKG))
+                     (format "\traco_system_setup \"${RACKET_PN}\" ~a" AUX_PKG)
+                     )
         (sh-function "pkg_postinst")
         sh-function->string
         )
