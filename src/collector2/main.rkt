@@ -57,14 +57,20 @@
    #:program "collector2"
 
    #:multi
-   [("-e" "--exclude")
+   [("-e" "--hard-exclude")
     package
-    "Exclude a given package from being generated"
+    "Exclude package and all packages depending on it from being generated"
     (let ([valid-name (make-valid-name package)])
-      (excluded (append (excluded)
-                        (if (equal? package valid-name)
-                            (list package) (list package valid-name))
-                        )))]
+      (hard-excluded (append (hard-excluded)
+                             (if (equal? package valid-name)
+                                 (list package) (list package valid-name)))))]
+   [("-E" "--soft-exclude")
+    package
+    "Exclude package from being generated, treat reverse dependencies as tough the package did not exist"
+    (let ([valid-name (make-valid-name package)])
+      (soft-excluded (append (soft-excluded)
+                             (if (equal? package valid-name)
+                                 (list package) (list package valid-name)))))]
 
    #:once-each
    [("-d" "--directory")
@@ -114,12 +120,13 @@
   (auto-current-pkg-catalogs (verbose-auto-catalog?))
 
   (when (verbose-exclude?)
-    (printf "Excluding: ~a\n" (string-join (excluded)))
-    )
+    (printf "Excluding (hash-purge-pkgs-chain): ~a\n"
+            (string-join (hard-excluded)))
+    (printf "Excluding (hash-purge-pkgs): ~a\n"
+            (string-join (soft-excluded))))
 
   (case (action)
     [(show)    (action:show)]
-    [(create)  (action:create (create-directory))]
-    )
+    [(create)  (action:create (create-directory))])
 
   )

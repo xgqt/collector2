@@ -35,24 +35,24 @@
  )
 
 
-(define excluded
+(define hard-excluded
+  (make-parameter '()))
+
+(define soft-excluded
   (make-parameter '()))
 
 
 (define (pkgs)
   {define all-pkgs-hash (all-pkgs)}
-  (let (
-        [main-distribution  (filter-tag "main-distribution" all-pkgs-hash)]
+  (let ([main-distribution  (filter-tag "main-distribution" all-pkgs-hash)]
         [main-tests         (filter-tag "main-tests" all-pkgs-hash)]
-        [platformed         (filter pkg-for-arch? (hash-keys all-pkgs-hash))]
-        )
+        [platformed         (filter pkg-for-arch? (hash-keys all-pkgs-hash))])
     (~> all-pkgs-hash
         (hash-filter-source #rx".*git.*|.*.tar.*|.*.zip")
         (hash-purge-pkgs main-tests)
         (hash-purge-pkgs main-distribution)
         (hash-purge-pkgs platformed)
-        (hash-purge-pkgs-chain (excluded))  ; "excluded" is a parameter
+        (hash-purge-pkgs (soft-excluded))
+        (hash-purge-pkgs-chain (hard-excluded))  ; "excluded" is a parameter
         hash-filter-failure
-        hash-remove-missing-dependencies
-        )
-    ))
+        hash-remove-missing-dependencies)))

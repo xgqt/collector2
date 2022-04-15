@@ -34,7 +34,8 @@
 
 (provide
  ;; from pkgs.rkt
- excluded
+ hard-excluded
+ soft-excluded
  verbose-filter?
  ;; local
  packages
