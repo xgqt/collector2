@@ -66,7 +66,7 @@
                                  (list package) (list package valid-name)))))]
    [("-E" "--soft-exclude")
     package
-    "Exclude package from being generated, treat reverse dependencies as tough the package did not exist"
+    "Exclude package from being generated, treat reverse dependencies as though the package did not exist"
     (let ([valid-name (make-valid-name package)])
       (soft-excluded (append (soft-excluded)
                              (if (equal? package valid-name)
