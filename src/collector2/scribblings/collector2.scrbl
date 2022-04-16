@@ -70,8 +70,13 @@ The upstream repository can be found on
   --- set the current-pkg-catalogs catalog to be examined
  }
  @item{
+  @Flag{E} @nonterm{package} or @DFlag{exclude} @nonterm{package}
+  --- exclude package from being generated,
+  treat reverse dependencies as though the package did not exist
+ }
+ @item{
   @Flag{e} @nonterm{package} or @DFlag{exclude} @nonterm{package}
-  --- exclude a given package from being generated
+  --- exclude package and all packages depending on it from being generated
  }
  @item{
   @Flag{d} @nonterm{directory} or @DFlag{directory} @nonterm{directory}
