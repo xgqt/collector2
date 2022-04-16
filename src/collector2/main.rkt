@@ -57,13 +57,6 @@
    #:program "collector2"
 
    #:multi
-   [("-e" "--hard-exclude")
-    package
-    "Exclude package and all packages depending on it from being generated"
-    (let ([valid-name (make-valid-name package)])
-      (hard-excluded (append (hard-excluded)
-                             (if (equal? package valid-name)
-                                 (list package) (list package valid-name)))))]
    [("-E" "--soft-exclude")
     package
     "Exclude package from being generated, treat reverse dependencies as though the package did not exist"
@@ -72,45 +65,45 @@
                              (if (equal? package valid-name)
                                  (list package) (list package valid-name)))))]
 
+   [("-e" "--hard-exclude")
+    package
+    "Exclude package and all packages depending on it from being generated"
+    (let ([valid-name (make-valid-name package)])
+      (hard-excluded (append (hard-excluded)
+                             (if (equal? package valid-name)
+                                 (list package) (list package valid-name)))))]
+
    #:once-each
-   [("-d" "--directory")
-    directory
-    "Set the directory for \"create\" option"
-    (create-directory directory)
-    ]
    [("-C" "--catalog")
     url
     "Set the current-pkg-catalogs catalog to be examined"
-    (set-current-pkg-catalogs url)
-    ]
+    (set-current-pkg-catalogs url)]
+   [("-d" "--directory")
+    directory
+    "Set the directory for \"create\" option"
+    (create-directory directory)]
    [("--verbose-auto-catalog")
     "Show if automatically setting the Racket catalogs"
-    (verbose-auto-catalog? #t)
-    ]
+    (verbose-auto-catalog? #t)]
    [("--verbose-exclude")
     "Show manually excluded packages"
-    (verbose-exclude? #t)
-    ]
+    (verbose-exclude? #t)]
    [("--verbose-filter")
     "Show filtered packages"
-    (verbose-filter? #t)
-    ]
+    (verbose-filter? #t)]
    [("-v" "--verbose")
     "Increase verbosity (enable other verbosity switches)"
     (verbose-filter? #t)
     (verbose-auto-catalog? #t)
-    (verbose-exclude? #t)
-    ]
+    (verbose-exclude? #t)]
 
    #:once-any
    [("-c" "--create")
     "Create ebuilds in a directory specified by \"directory\" option"
-    (action 'create)
-    ]
+    (action 'create)]
    [("-s" "--show")
     "Dump ebuilds to standard out, do not write to disk"
-    (action 'show)
-    ]
+    (action 'show)]
 
    #:ps ""
    "Copyright (c) 2021-2022, src_prepare group"
