@@ -21,51 +21,39 @@
 MAKE        := make
 SH          := sh
 
-# For recursive calls
-WHAT        :=
 
-
-.PHONY: all src-make clean compile install setup test remove purge
+.PHONY: all src-make-%
+.PHONY: clean compile install setup test remove
 .PHONY: public-clean public-regen
 
-all: compile
+all: clean compile
 
 
-src-make:
-	cd ./src && $(MAKE) DEPS-FLAGS=" --no-pkg-deps " $(WHAT)
+src-make-%:
+	$(MAKE) -C $(PWD)/src DEPS-FLAGS=" --no-pkg-deps " $(*)
 
 
-clean:
-	$(MAKE) src-make WHAT=clean
+clean: src-make-clean
 
-compile:
-	$(MAKE) src-make WHAT=compile
+compile: src-make-compile
 
-install:
-	$(MAKE) src-make WHAT=install
+install: src-make-install
 
-setup:
-	$(MAKE) src-make WHAT=setup
+setup: src-make-setup
 
-test:
-	$(MAKE) src-make WHAT=test
+test: src-make-test
 
-remove:
-	$(MAKE) src-make WHAT=remove
-
-purge:
-	$(MAKE) src-make WHAT=purge
+remove: src-make-remove
 
 
-exe:
-	$(MAKE) src-make WHAT=exe
+bin: src-make-exe
 	cp -r ./src/bin .
 
 
 public:
-	$(SH) ./scripts/public.sh
+	$(SH) $(PWD)/scripts/public.sh
 
 public-clean:
-	rm -dfr ./public
+	rm -dfr $(PWD)/public
 
 public-regen: public-clean public
