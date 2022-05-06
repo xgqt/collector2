@@ -81,12 +81,11 @@
 ;; Class for resolving circular dependencies in some racket packages
 (define ebuild-rkt-cir%
   (class (ebuild-rkt-mixin ebuild%)
-    (init-field
-     MAIN_URI MAIN_PH MAIN_S
-     AUX_URI AUX_PH AUX_S AUX_PKG
-     )
+    (init-field MAIN_URI MAIN_PH MAIN_S
+                AUX_URI AUX_PH AUX_S AUX_PKG)
     (super-new
-     [custom (list (format "MAIN_PH=~a\nAUX_PH=~a" MAIN_PH AUX_PH))]
+     [custom
+      (list (format "MAIN_PH=~a\nAUX_PH=~a" MAIN_PH AUX_PH))]
      [SRC_URI
       (list (src-uri #f (format "~a/archive/${MAIN_PH}.tar.gz" MAIN_URI)
                      "${P}.tar.gz")
@@ -98,34 +97,24 @@
       (list (racket-pkg->pms-pkg AUX_PKG))]
      [body
       (list
-       (~>>
-        (make-script
-         (format "pushd \"${WORKDIR}/~a-${AUX_PH}/~a\" >/dev/null || die"
-                 (basename AUX_URI) AUX_S)
-         (format "raco_bare_install user ~a" AUX_PKG)
-         "popd >/dev/null || die\n"
-         "racket_src_compile"
-         )
-        (sh-function "src_compile")
-        sh-function->string
-        )
-       (~>>
-        (make-script #<<EOF
-if has_version "dev-scheme/racket" && racket-where "${RACKET_PN}" ; then
-EOF
-                     (format "\traco_remove \"${RACKET_PN}\" ~a" AUX_PKG)
-                     "fi")
-        (sh-function "pkg_prerm")
-        sh-function->string
-        )
-       (~>>
-        (make-script "raco_system_install\n"
-                     (format "has_version ~a &&" (racket-pkg->pms-pkg AUX_PKG))
-                     (format "\traco_system_setup \"${RACKET_PN}\" ~a" AUX_PKG)
-                     )
-        (sh-function "pkg_postinst")
-        sh-function->string
-        )
-       )]
-     )
-    ))
+       (~>> (make-script
+             (format "pushd \"${WORKDIR}/~a-${AUX_PH}/~a\" >/dev/null || die"
+                     (basename AUX_URI) AUX_S)
+             (format "raco_bare_install user ~a" AUX_PKG)
+             "popd >/dev/null || die\n"
+             "racket_src_compile")
+            (sh-function "src_compile")
+            sh-function->string)
+       (~>> (make-script
+             (format "if [[ -z \"${REPLACED_BY_VERSION}\" ]] && racket-where ~a ; then"
+                     AUX_PKG)
+             (format "\traco_remove \"${RACKET_PN}\" ~a" AUX_PKG)
+             "fi")
+            (sh-function "pkg_prerm")
+            sh-function->string)
+       (~>> (make-script
+             "! racket-where \"${RACKET_PN}\" && raco_system_install\n"
+             (format "has_version ~a &&" (racket-pkg->pms-pkg AUX_PKG))
+             (format "\traco_system_setup \"${RACKET_PN}\" ~a" AUX_PKG))
+            (sh-function "pkg_postinst")
+            sh-function->string))])))
