@@ -24,17 +24,16 @@
 #lang racket/base
 
 (require
- pkg/lib
- )
+ pkg/lib)
 
-(provide
- all-pkgs
- )
+(provide all-pkgs)
 
 
 (define (all-pkgs)
   (let ([hsh (get-all-pkg-details-from-catalogs)])
-    (if (equal? hsh (hash))
-        (error 'ERROR "Empty packages hash")
-        hsh
-        )))
+    (cond
+      [(equal? hsh (hash))
+       (error 'all-pkgs "empty packages hash")]
+      [(not (hash? hsh))
+       (error 'all-pkgs "not a hash: \"~v\"" hsh)]
+      [else hsh])))
