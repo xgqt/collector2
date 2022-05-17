@@ -25,16 +25,13 @@
 
 
 (module+ main
-
   (require
    racket/cmdline
    racket/format
    counter
    "all.rkt"
    "catalogs.rkt"
-   "separator.rkt"
-   )
-
+   "separator.rkt")
 
   (auto-current-pkg-catalogs #f)
 
@@ -45,26 +42,17 @@
    [("-C" "--catalog")
     url
     "Set the current-pkg-catalogs catalog to be examined"
-    (set-current-pkg-catalogs url)
-    ]
+    (set-current-pkg-catalogs url)]
 
    #:ps ""
    "Copyright (c) 2021-2022, src_prepare group"
-   "Licensed under the GNU GPL v3 License"
-   )
+   "Licensed under the GNU GPL v3 License")
 
   (define cntr (make-counter 0))
 
   (hash-for-each
    (all-pkgs)
    (lambda (name data)
-     (displayln (~a separator             "\n"
-                    "number: " (cntr)     "\n"
-                    "name:   " (~a name)  "\n"
-                    "data:   " (~v data)  "\n"
-                    separator             "\n"
-                    ))
-     )
-   )
-
+     (printf "~a~%number: ~a~%name: ~a~%data: ~v~%~a~%"
+             separator (cntr) name data separator)))
   )
