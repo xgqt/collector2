@@ -25,13 +25,9 @@
 
 (require
  (only-in net/url string->url)
- (only-in pkg/lib current-pkg-catalogs)
- )
+ (only-in pkg/lib current-pkg-catalogs))
 
-(provide
- auto-current-pkg-catalogs
- set-current-pkg-catalogs
- )
+(provide auto-current-pkg-catalogs set-current-pkg-catalogs)
 
 
 (define default-pkg-catalog
@@ -41,11 +37,10 @@
 
 (define (set-current-pkg-catalogs url-str)
   (case url-str
-    [("auto")   (set-current-pkg-catalogs "https://pkgs.racket-lang.org/")]
-    [("false")  (current-pkg-catalogs #f)]
-    [("nop")    (void)]
-    [else       (current-pkg-catalogs (list (string->url url-str)))]
-    ))
+    [("auto")  (set-current-pkg-catalogs "https://pkgs.racket-lang.org/")]
+    [("false") (current-pkg-catalogs #f)]
+    [("nop")   (void)]
+    [else      (current-pkg-catalogs (list (string->url url-str)))]))
 
 (define (auto-current-pkg-catalogs [verbose? #t])
   (cond
@@ -55,5 +50,4 @@
     [else
      (when verbose?
        (printf "Setting \"current-pkg-catalogs\" to ~v\n" default-pkg-catalog))
-     (set-current-pkg-catalogs "auto")]
-    ))
+     (set-current-pkg-catalogs "auto")]))
