@@ -25,15 +25,12 @@
 
 
 (module+ main
-
   (require
    racket/cmdline
    racket/format
    counter
    "all.rkt"
-   "catalogs.rkt"
-   )
-
+   "catalogs.rkt")
 
   (auto-current-pkg-catalogs #f)
 
@@ -44,18 +41,14 @@
    [("-C" "--catalog")
     url
     "Set the current-pkg-catalogs catalog to be examined"
-    (set-current-pkg-catalogs url)
-    ]
+    (set-current-pkg-catalogs url)]
 
    #:ps ""
    "Copyright (c) 2021-2022, src_prepare group"
-   "Licensed under the GNU GPL v3 License"
-   )
+   "Licensed under the GNU GPL v3 License")
 
   (define cntr (make-counter 0))
 
   (for ([name (sort (hash-keys (all-pkgs)) string<?)])
-    (displayln (~a (cntr) ": " name))
-    )
-
+    (printf "~a: ~a~%" (cntr) name))
   )
