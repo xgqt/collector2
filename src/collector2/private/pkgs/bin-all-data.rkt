@@ -27,7 +27,6 @@
 (module+ main
   (require
    racket/cmdline
-   racket/format
    counter
    "all.rkt"
    "catalogs.rkt"
