@@ -25,8 +25,9 @@
 
 
 (define racket-launcher-names
-  '("collector2-all-data" "collector2-all-names")
-  )
+  '("collector2-all-data"
+    "collector2-all-names"))
+
 (define racket-launcher-libraries
-  '("bin-all-data.rkt"    "bin-all-names.rkt")
-  )
+  '("bin-all-data.rkt"
+    "bin-all-names.rkt"))

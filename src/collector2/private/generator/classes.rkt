@@ -29,28 +29,26 @@
  ebuild/templates/gh
  threading
  upi/basename
- "name.rkt"
- )
+ "name.rkt")
 
 (provide
  ebuild-rkt%
  ebuild-rkt-gh%
- ebuild-rkt-cir%
- )
+ ebuild-rkt-cir%)
 
 
 (define/contract (string->pms-pkg str)
   (-> string? string?)
-  (string-append "dev-racket/" (make-valid-name str))
-  )
+  (string-append "dev-racket/" (make-valid-name str)))
 
 (define/contract (racket-pkg->pms-pkg arg)
   (-> (or/c string? list?) string?)
   (cond
-    [(string? arg) (string->pms-pkg arg)]
+    [(string? arg)
+     (string->pms-pkg arg)]
     ;; NOTICE: #:version is probably unnecessary
-    [(list? arg)   (string->pms-pkg (car arg))]
-    ))
+    [(list? arg)
+     (string->pms-pkg (car arg))]))
 
 
 (define (ebuild-rkt-mixin %)
@@ -59,18 +57,15 @@
     (super-new
      [EAPI      8]
      [inherits  '("racket")]
-     [RESTRICT  '("mirror")]
-     )
+     [RESTRICT  '("mirror")])
     (inherit-field DEPEND RDEPEND)
 
     (define/private (unroll-RACKET_DEPEND)
-      (sort  (map racket-pkg->pms-pkg RACKET_DEPEND)  string<=?)
-      )
+      (sort (map racket-pkg->pms-pkg RACKET_DEPEND) string<=?))
+
     (when (not (null? RACKET_DEPEND))
       (set! RDEPEND (unroll-RACKET_DEPEND))
-      (set! DEPEND  '("${RDEPEND}"))
-      )
-    ))
+      (set! DEPEND  '("${RDEPEND}")))))
 
 (define ebuild-rkt%
   (ebuild-rkt-mixin ebuild%))

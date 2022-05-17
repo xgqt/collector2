@@ -24,8 +24,7 @@
 #lang racket/base
 
 (require
- racket/string
- )
+ racket/string)
 
 (provide make-valid-name)
 
@@ -37,7 +36,5 @@
         [invalid-numbers (regexp-match* #rx"-[0-9]" name)])
     (for ([in invalid-numbers])
       ;; FIXME: regex ?
-      (set! mname (string-replace mname in (string-trim in "-")))
-      )
-    (string-downcase mname)
-    ))
+      (set! mname (string-replace mname in (string-trim in "-"))))
+    (string-downcase mname)))

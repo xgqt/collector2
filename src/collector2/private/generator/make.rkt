@@ -31,47 +31,36 @@
  "../epoch/epoch.rkt"
  "../repo/repo.rkt"
  "classes.rkt"
- "name.rkt"
- )
+ "name.rkt")
 
-(provide
- make-archive
- make-cir
- make-gh
- )
+(provide make-archive make-cir make-gh)
 
 
 (define (get-commit-hash data)
   (let ([c1 (~> data
                 (hash-ref 'versions (hash))
                 (hash-ref 'default  (hash))
-                (hash-ref 'checksum "")
-                )]
+                (hash-ref 'checksum ""))]
         [c2 (hash-ref data 'checksum "")])
-    (if (equal? c1 "")  c2  c1)
-    ))
+    (if (equal? c1 "")
+        c2
+        c1)))
 
 (define (make-valid-description name description)
-  (if (or
-       ;; empty
-       (equal? "" description)
-       ;; too long
-       (> (string-length description) 79)
-       ;; includes non-ASCII characters
-       (not (null? (regexp-match* #rx"[^\x00-\x7F]" description)))
-       )
+  (if (or (equal? "" description)  ; empty
+          (> (string-length description) 79)  ; too long
+          ;; includes non-ASCII characters
+          (not (null? (regexp-match* #rx"[^\x00-\x7F]" description))))
       (string-append "the " name " Racket package")
       ;; replace: `, ", \n, \r (^M)
-      (string-trim (regexp-replace* #rx"[`\"\n\r]" description ""))
-      ))
+      (string-trim (regexp-replace* #rx"[`\"\n\r]" description ""))))
 
 (define (normalize-url-string str)
   (~> str
       (regexp-replace "git://" _ "https://")
       (regexp-replace #rx"\\?[a-z]+=.*" _ "")
       (regexp-replace #rx"#.*" _ "")
-      (regexp-replace ".git$" _ "")
-      ))
+      (regexp-replace ".git$" _ "")))
 
 
 ;; In case of zip the archive snapshots are not kept,
@@ -84,8 +73,7 @@
                       (format "unpack \"${T}/~a\"" archive)
                       ))
        (sh-function "src_unpack")
-       sh-function->string
-       ))
+       sh-function->string))
 
 (define (make-archive name src data)
   {define my-ebuild
@@ -97,14 +85,12 @@
          [SRC_URI        '()]
          [S              "${WORKDIR}/${PN}"]
          [KEYWORDS       '("~amd64")]  ; unfortunately many pkgs depend on zips
-         [body           (list (lambda () (archive-body src)))]
-         )}
+         [body           (list (lambda () (archive-body src)))])}
   (new package%
        [CATEGORY  "dev-racket"]
        [PN        (make-valid-name name)]
        [ebuilds   (hash (live-version) my-ebuild)]
-       [metadata  (new metadata%)]
-       ))
+       [metadata  (new metadata%)]))
 
 
 (define (make-cir main-name main-src main-data aux-name aux-src aux-data)
@@ -122,22 +108,19 @@
                 (remove aux-name  ; dep we want to rm might be a list
                         (~>> main-data
                              (hash-ref _ 'dependencies '())
-                             (map (lambda (v) (if (list? v) (car v) v)))
-                             ))]
+                             (map (lambda (v) (if (list? v) (car v) v)))))]
                [DESCRIPTION
                 (make-valid-description
                  main-name (hash-ref main-data 'description ""))]
                [HOMEPAGE
-                (format "https://pkgs.racket-lang.org/package/~a" main-name)]
-               )])
+                (format "https://pkgs.racket-lang.org/package/~a" main-name)])])
 
     (new package%
          [CATEGORY  "dev-racket"]
          [PN        (make-valid-name main-name)]
          ;; FIXME: handle no commit hash? & pick higher snapshot?
          [ebuilds   (hash (simple-version main-snapshot) ebuild)]
-         [metadata  (new metadata%)]
-         )))
+         [metadata  (new metadata%)])))
 
 
 (define (make-gh name src data)
@@ -157,10 +140,9 @@
              [RACKET_DEPEND  (hash-ref data 'dependencies '())]
              [S
               (cond
-                [(query-path src) => (lambda (s) (string-append "${S}/" s))]
-                [else  #f]
-                )]
-             ))]
+                [(query-path src)
+                 => (lambda (s) (string-append "${S}/" s))]
+                [else #false])]))]
          [my-ebuilds
           ;; If "gh_dom" is supported by "gh.eclass" generate both live
           ;; and non-live, otherwise generate only live
@@ -182,14 +164,11 @@
           (upstream
            '() #f #f gh_web
            (case gh_dom
-             [("github.com")  (list (remote-id 'github gh_repo))]
-             [("gitlab.com")  (list (remote-id 'gitlab gh_repo))]
-             [else  '()]
-             )
-           )])
+             [("github.com") (list (remote-id 'github gh_repo))]
+             [("gitlab.com") (list (remote-id 'gitlab gh_repo))]
+             [else '()]))])
     (new package%
          [CATEGORY  "dev-racket"]
          [PN        (make-valid-name name)]
          [ebuilds   my-ebuilds]
-         [metadata  (new metadata% [upstream my-upstream])]
-         )))
+         [metadata  (new metadata% [upstream my-upstream])])))

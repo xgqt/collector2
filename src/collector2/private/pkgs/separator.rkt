@@ -24,16 +24,14 @@
 #lang racket/base
 
 (require
- racket/contract
- )
+ racket/contract)
 
 (provide (all-defined-out))
 
 
 (define/contract (make-separator num)
   (-> integer? string?)
-  (make-string num #\-)
-  )
+  (make-string num #\-))
 
 (define separator (make-separator 25))
 

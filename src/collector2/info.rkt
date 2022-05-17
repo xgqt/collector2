@@ -29,9 +29,9 @@
 
 (define racket-launcher-names
   '("collector2"))
+
 (define racket-launcher-libraries
   '("main.rkt"))
 
 (define scribblings
-  '(("scribblings/collector2.scrbl"
-     (multi-page) (tool) "collector2")))
+  '(("scribblings/collector2.scrbl" (multi-page) (tool) "collector2")))

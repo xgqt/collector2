@@ -26,13 +26,11 @@
 (require
  threading
  "all.rkt"
- "filter.rkt"
- )
+ "filter.rkt")
 
 (provide
  (all-defined-out)
- verbose-filter?
- )
+ verbose-filter?)
 
 
 (define hard-excluded

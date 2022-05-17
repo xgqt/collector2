@@ -25,36 +25,27 @@
 
 (require
  "filter.rkt"
- "hash.rkt"
- )
+ "hash.rkt")
 
 
 (define test-hash
   (hash
    "custom0" (hash 'name "custom0"
-                   'source        "https://gitlab.com/asd/custom0.git"
-                   )
+                   'source        "https://gitlab.com/asd/custom0.git")
    "custom1" (hash 'name "custom1"
-                   'tags          '("main-distribution")
-                   )
+                   'tags          '("main-distribution"))
    "custom2" (hash 'name "custom2"
                    'dependencies  '("custom0" "custom1")
-                   'tags          '("main-distribution")
-                   )
+                   'tags          '("main-distribution"))
    "custom3" (hash 'name "custom3"
-                   'dependencies  '("custom2")
-                   )
+                   'dependencies  '("custom2"))
    "custom4" (hash 'name "custom4"
-                   'dependencies  '("custom3")
-                   )
+                   'dependencies  '("custom3"))
    "custom5" (hash 'name "custom5"
-                   'dependencies  '("custom0" "custom5" "none")
-                   )
-   ))
+                   'dependencies  '("custom0" "custom5" "none"))))
 
 (define (numkeys hsh)
-  (length (hash-keys hsh))
-  )
+  (length (hash-keys hsh)))
 
 
 (module+ test

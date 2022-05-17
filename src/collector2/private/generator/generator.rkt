@@ -29,8 +29,7 @@
  ebuild
  threading
  "../pkgs/pkgs.rkt"
- "make.rkt"
- )
+ "make.rkt")
 
 (provide
  ;; from pkgs.rkt
@@ -39,8 +38,7 @@
  verbose-filter?
  ;; local
  packages
- repository
- )
+ repository)
 
 
 ;; URLs may contain a placeholder URL with "empty.zip"
@@ -48,8 +46,7 @@
 ;; this is why we have to find a URL without ".zip" if possible
 
 (define (archive? str)
-  (list? (regexp-match #rx".*.tar.*|.*.zip$" str))
-  )
+  (list? (regexp-match #rx".*.tar.*|.*.zip$" str)))
 
 (define (packages)
   {define apkgs (pkgs)}
@@ -57,17 +54,17 @@
    apkgs
    (lambda (name data)
      {define (data->src data)
-       (let (  ; candidates for source URL
-             [c1  (~> data
-                      (hash-ref 'versions (hash))
-                      (hash-ref 'default  (hash))
-                      (hash-ref 'source   "")
-                      )]
-             [c2  (hash-ref data 'source "")])
-         (if (or (archive? c1) (equal? c1 ""))
-             (if (or (archive? c2) (equal? c2 "")) c1  c2)
-             c1
-             ))}
+       (let ; candidates for source URL
+           ([c1 (~> data
+                    (hash-ref 'versions (hash))
+                    (hash-ref 'default  (hash))
+                    (hash-ref 'source   ""))]
+            [c2 (hash-ref data 'source "")])
+           (if (or (archive? c1) (equal? c1 ""))
+               (if (or (archive? c2) (equal? c2 ""))
+                   c1
+                   c2)
+               c1))}
      {define src (data->src data)}
      {define circular
        (for/first
@@ -77,24 +74,19 @@
                     (cond
                       [(string? dependency)  dependency]
                       [(list?   dependency)  (car dependency)]
-                      [else  ""]
-                      )]
+                      [else  ""])]
                    [dependency-dependencies
                     (~> apkgs
                         (hash-ref dependency-name (hash))
-                        (hash-ref 'dependencies '())
-                        )])
+                        (hash-ref 'dependencies '()))])
               (match dependency-dependencies
                 [(list-no-order (list-no-order (== name) _ ...) _ ...)  #t]
                 [(list-no-order (== name) _ ...)  #t]
-                [_  #f]
-                )))
+                [_  #f])))
          (cond
            [(string? dependency)  dependency]
            [(list?   dependency)  (car dependency)]
-           [else  ""]
-           )
-         )}
+           [else  ""]))}
      (cond
        [(and circular (string-contains? src "git"))
         {define aux-data
@@ -103,12 +95,9 @@
        [(string-contains? src "git")
         (make-gh name src data)]
        [else
-        (make-archive name src data)]
-       ))
-   ))
+        (make-archive name src data)]))))
 
 (define (repository)
   (new repository%
        [name "racket-overlay"]
-       [packages (packages)]
-       ))
+       [packages (packages)]))

@@ -63,40 +63,30 @@
   (check-equal? (url-top "http://xyz@example.com:123/asd/fgh/jkl")
                 "xyz@example.com:123")
 
-  (check-equal?
-   (string->repo "")
-   ""
-   )
+  (check-equal? (string->repo "") "")
   (check-equal?
    (string->repo "https://github.com/asd-mirror/asd.git")
-   "asd-mirror/asd"
-   )
+   "asd-mirror/asd")
   (check-equal?
    (string->repo "https://github.com/asd-mirror/asd.git#trunk")
-   "asd-mirror/asd"
-   )
+   "asd-mirror/asd")
   (check-equal?
    (string->repo "https://gitlab.com/asd-project/asd/asd.git")
-   "asd-project/asd/asd"
-   )
+   "asd-project/asd/asd")
   (check-equal?
    (string->repo "https://gitlab.com/asd-project/asd/asd.git#trunk")
-   "asd-project/asd/asd"
-   )
+   "asd-project/asd/asd")
 
   (check-false  (query-path ""))
   (check-false  (query-path "https://github.com/asd-mirror/asd.git"))
   (check-equal?
    (query-path "https://github.com/asd-mirror/asd.git?path=asd-lib")
-   "asd-lib"
-   )
+   "asd-lib")
   (check-equal?
    (query-path "https://github.com/asd-mirror/asd.git?path=asd-lib#trunk")
-   "asd-lib"
-   )
+   "asd-lib")
   (check-equal?
    (query-path "https://github.com/asd-mirror/asd.git?path=asd/asd-doc/asd-doc#trunk")
-   "asd/asd-doc/asd-doc"
-   )
+   "asd/asd-doc/asd-doc")
 
   )

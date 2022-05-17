@@ -30,19 +30,16 @@
  (only-in racket/string string-join)
  "private/generator/generator.rkt"
  "private/generator/name.rkt"
- "private/pkgs/catalogs.rkt"
- )
+ "private/pkgs/catalogs.rkt")
 
 
 (define (action:show)
   {define r (repository)}
   (send r show)
-  (printf "\n>>> Packages generated:~a\n" (length (get-field packages r)))
-  )
+  (printf "\n>>> Packages generated:~a\n" (length (get-field packages r))))
 
 (define (action:create [root "."])
-  (send (repository) save-packages (path->complete-path root))
-  )
+  (send (repository) save-packages (path->complete-path root)))
 
 
 (module+ main
@@ -107,8 +104,7 @@
 
    #:ps ""
    "Copyright (c) 2021-2022, src_prepare group"
-   "Licensed under the GNU GPL v3 License"
-   )
+   "Licensed under the GNU GPL v3 License")
 
   (auto-current-pkg-catalogs (verbose-auto-catalog?))
 
@@ -121,5 +117,4 @@
   (case (action)
     [(show)    (action:show)]
     [(create)  (action:create (create-directory))])
-
   )
