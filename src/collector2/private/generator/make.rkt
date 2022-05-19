@@ -47,7 +47,7 @@
         c1)))
 
 (define (make-valid-description name description)
-  (if (or (equal? "" description)  ; empty
+  (if (or (< (string-length description) 11)  ; too short
           (> (string-length description) 79)  ; too long
           ;; includes non-ASCII characters
           (not (null? (regexp-match* #rx"[^\x00-\x7F]" description))))
