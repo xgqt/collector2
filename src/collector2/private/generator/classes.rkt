@@ -58,14 +58,14 @@
      [EAPI      8]
      [inherits  '("racket")]
      [RESTRICT  '("mirror")])
-    (inherit-field DEPEND RDEPEND)
+    (inherit-field BDEPEND RDEPEND)
 
     (define/private (unroll-RACKET_DEPEND)
       (sort (map racket-pkg->pms-pkg RACKET_DEPEND) string<=?))
 
     (when (not (null? RACKET_DEPEND))
       (set! RDEPEND (unroll-RACKET_DEPEND))
-      (set! DEPEND  '("${RDEPEND}")))))
+      (set! BDEPEND '("${RDEPEND}")))))
 
 (define ebuild-rkt%
   (ebuild-rkt-mixin ebuild%))
