@@ -51,7 +51,7 @@
           (> (string-length description) 79)  ; too long
           ;; includes non-ASCII characters
           (not (null? (regexp-match* #rx"[^\x00-\x7F]" description))))
-      (string-append "the " name " Racket package")
+      (string-append "The " name " Racket package")
       ;; replace: `, ", \n, \r (^M)
       (string-trim (regexp-replace* #rx"[`\"\n\r]" description ""))))
 
