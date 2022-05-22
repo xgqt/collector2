@@ -27,6 +27,7 @@
 (define pkg-authors '(xgqt))
 (define pkg-desc "Parse Racket catalogs and generate ebuild scripts")
 (define version "5.1.1")
+(define license '(GPL-3.0-only))
 
 (define collection 'multi)
 
