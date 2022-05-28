@@ -47,13 +47,16 @@
         c1)))
 
 (define (make-valid-description name description)
-  (if (or (< (string-length description) 11)  ; too short
-          (> (string-length description) 79)  ; too long
-          ;; includes non-ASCII characters
-          (not (null? (regexp-match* #rx"[^\x00-\x7F]" description))))
-      (string-append "The " name " Racket package")
-      ;; replace: `, ", \n, \r (^M)
-      (string-trim (regexp-replace* #rx"[`\"\n\r]" description ""))))
+  (cond
+    [(or (< (string-length description) 11)  ; too short
+         (> (string-length description) 79)  ; too long
+         (equal? description name)  ; too generic  ; CONSIDER: titlecase?
+         ;; includes non-ASCII characters
+         (not (null? (regexp-match* #rx"[^\x00-\x7F]" description))))
+     (string-append "The " name " Racket package")]
+    [else
+     ;; replace: `, ", \n, \r (^M)
+     (string-trim (regexp-replace* #rx"[`\"\n\r]" description ""))]))
 
 (define (normalize-url-string str)
   (~> str
