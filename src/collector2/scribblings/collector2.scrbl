@@ -27,16 +27,13 @@
    @(only-in scribble/bnf nonterm)
    @(for-label
      ;; collector2
-     racket/base
-     )
-   )
+     racket/base))
 
 
 @(define (link2overlay pth)
-  {define overlay
-    "https://gitlab.com/src_prepare/racket/racket-overlay/-/tree/master/"}
-  (link (string-append overlay pth) pth)
-  )
+   (let ([overlay
+          "https://gitlab.com/src_prepare/racket/racket-overlay/-/tree/master/"])
+     (link (string-append overlay pth) pth)))
 
 
 @title{Collector2}
