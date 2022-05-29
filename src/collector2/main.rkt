@@ -41,14 +41,31 @@
 (define (action:create [root "."])
   (send (repository) save-packages (path->complete-path root)))
 
+(define (action:only-packages package-names action [root "."])
+  (let ([packages (get-field packages (repository))])
+    (for ([package-name package-names])
+      (for/first ([package packages]
+                  #:when (equal? (get-field PN package) package-name))
+        (case action
+          [(create) (send package save root)]
+          [(show)   (send package show)])))))
+
 
 (module+ main
+  (define create-directory
+    (make-parameter (current-directory)))
 
-  (define create-directory (make-parameter (current-directory)))
-  (define action (make-parameter 'show))
+  (define action
+    (make-parameter 'show))
 
-  (define verbose-auto-catalog? (make-parameter #f))
-  (define verbose-exclude? (make-parameter #f))
+  (define only-packages
+    (make-parameter '()))
+
+  (define verbose-auto-catalog?
+    (make-parameter #f))
+
+  (define verbose-exclude?
+    (make-parameter #f))
 
   (command-line
    #:program "collector2"
@@ -69,6 +86,11 @@
       (hard-excluded (append (hard-excluded)
                              (if (equal? package valid-name)
                                  (list package) (list package valid-name)))))]
+   [("--only-package")
+    package
+    "Only create/show the specified package"
+    (only-packages (cons package (only-packages)))]
+   ;; TODO: --only-package-chain
 
    #:once-each
    [("-C" "--catalog")
@@ -114,7 +136,11 @@
     (printf "Excluding (hash-purge-pkgs): ~a\n"
             (string-join (soft-excluded))))
 
-  (case (action)
-    [(show)    (action:show)]
-    [(create)  (action:create (create-directory))])
+  (cond
+    [(not (null? (only-packages)))
+     (action:only-packages (only-packages) (action) (create-directory))]
+    [else
+     (case (action)
+       [(create) (action:create (create-directory))]
+       [(show)   (action:show)])])
   )
