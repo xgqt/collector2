@@ -34,12 +34,17 @@
 (provide
  ebuild-rkt%
  ebuild-rkt-gh%
- ebuild-rkt-cir%)
+ ebuild-rkt-cir%
+ package-category)
+
+
+(define package-category
+  (make-parameter "dev-racket"))
 
 
 (define/contract (string->pms-pkg str)
   (-> string? string?)
-  (string-append "dev-racket/" (make-valid-name str)))
+  (format "~a/~a" (package-category) (make-valid-name str)))
 
 (define/contract (racket-pkg->pms-pkg arg)
   (-> (or/c string? list?) string?)

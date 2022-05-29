@@ -36,6 +36,8 @@
  hard-excluded
  soft-excluded
  verbose-filter?
+ ;; from make.rkt
+ package-category
  ;; local
  packages
  repository)

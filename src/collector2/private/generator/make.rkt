@@ -33,7 +33,12 @@
  "classes.rkt"
  "name.rkt")
 
-(provide make-archive make-cir make-gh)
+(provide
+ make-archive
+ make-cir
+ make-gh
+ ;; from classes.rkt
+ package-category)
 
 
 (define (get-commit-hash data)
@@ -89,7 +94,7 @@
          [KEYWORDS       '("~amd64")]  ; unfortunately many pkgs depend on zips
          [body           (list (lambda () (archive-body src)))])}
   (new package%
-       [CATEGORY  "dev-racket"]
+       [CATEGORY  (package-category)]
        [PN        (make-valid-name name)]
        [ebuilds   (hash (live-version) my-ebuild)]
        [metadata  (new metadata%)]))
@@ -118,7 +123,7 @@
                 (format "https://pkgs.racket-lang.org/package/~a" main-name)])])
 
     (new package%
-         [CATEGORY  "dev-racket"]
+         [CATEGORY  (package-category)]
          [PN        (make-valid-name main-name)]
          ;; FIXME: handle no commit hash? & pick higher snapshot?
          [ebuilds   (hash (simple-version main-snapshot) ebuild)]
@@ -170,7 +175,7 @@
              [("gitlab.com") (list (remote-id 'gitlab gh_repo))]
              [else '()]))])
     (new package%
-         [CATEGORY  "dev-racket"]
+         [CATEGORY  (package-category)]
          [PN        (make-valid-name name)]
          [ebuilds   my-ebuilds]
          [metadata  (new metadata% [upstream my-upstream])])))
