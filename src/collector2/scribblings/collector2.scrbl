@@ -76,6 +76,10 @@ The upstream repository can be found on
   --- exclude package and all packages depending on it from being generated
  }
  @item{
+  @DFlag{only-package} @nonterm{package}
+  --- only create/show the specified package
+  }
+ @item{
   @Flag{d} @nonterm{directory} or @DFlag{directory} @nonterm{directory}
   --- set the directory for @DFlag{create} to a given @nonterm{directory}
   }
