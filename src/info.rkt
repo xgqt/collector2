@@ -25,23 +25,23 @@
 
 
 (define pkg-authors '(xgqt))
+
 (define pkg-desc "Parse Racket catalogs and generate ebuild scripts")
-(define version "5.1.1")
+
+(define version "5.2.1")
+
 (define license '(GPL-3.0-only))
 
 (define collection 'multi)
 
 (define deps
-  '(
-    "base"
+  '("base"
     "counter"
     "ebuild-lib"
     "ebuild-templates"
     "threading-lib"
-    "upi-lib"
-    ))
+    "upi-lib"))
+
 (define build-deps
-  '(
-    "rackunit-lib"
-    "scribble-lib"
-    ))
+  '("rackunit-lib"
+    "scribble-lib"))
