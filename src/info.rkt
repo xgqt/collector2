@@ -30,7 +30,7 @@
 
 (define version "5.2.1")
 
-(define license '(GPL-3.0-only))
+(define license 'GPL-3.0-only)
 
 (define collection 'multi)
 
