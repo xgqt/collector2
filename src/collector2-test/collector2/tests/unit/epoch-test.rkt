@@ -27,7 +27,7 @@
 (module+ test
   (require
    rackunit
-   collector2/private/epoch/epoch)
+   collector2/epoch)
 
   (check-equal? (epoch->string 0) "1970-01-01")
   (check-equal? (epoch->string 1622077200) "2021-05-27")

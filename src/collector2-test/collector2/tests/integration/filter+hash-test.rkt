@@ -27,8 +27,8 @@
 (module+ test
   (require
    rackunit
-   collector2/private/pkgs/filter
-   collector2/private/pkgs/hash)
+   collector2/pkgs/filter
+   collector2/pkgs/hash)
 
   (define test-hash
     (hash "custom0"

@@ -29,9 +29,9 @@
  racket/class
  (only-in racket/string string-join)
  "version.rkt"
- "private/generator/generator.rkt"
- "private/generator/name.rkt"
- "private/pkgs/catalogs.rkt")
+ "generator/generator.rkt"
+ "generator/name.rkt"
+ "pkgs/catalogs.rkt")
 
 
 (define (action:show)

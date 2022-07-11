@@ -27,7 +27,7 @@
 (module+ test
   (require
    rackunit
-   collector2/private/pkgs/separator)
+   collector2/pkgs/separator)
 
   (check-equal? (make-separator 0) "")
   (check-equal? (make-separator 3) "---")

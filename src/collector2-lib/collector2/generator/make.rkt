@@ -28,8 +28,8 @@
  ebuild
  threading
  upi/basename
- "../epoch/epoch.rkt"
- "../repo/repo.rkt"
+ "../epoch.rkt"
+ "../repo.rkt"
  "classes.rkt"
  "name.rkt")
 

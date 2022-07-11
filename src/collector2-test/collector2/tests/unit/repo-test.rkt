@@ -27,7 +27,7 @@
 (module+ test
   (require
    rackunit
-   collector2/private/repo/repo)
+   collector2/repo)
 
   (check-equal? (url-string->path-string "") "")
   (check-equal? (url-string->path-string "http://example.com") "/")
