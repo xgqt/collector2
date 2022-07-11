@@ -28,7 +28,7 @@
 
 (define pkg-desc "Parse Racket catalogs and generate ebuild scripts. Tests.")
 
-(define version "5.2.1")
+(define version "6.0.0")
 
 (define license 'GPL-3.0-only)
 
