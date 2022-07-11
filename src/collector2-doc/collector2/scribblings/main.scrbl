@@ -25,10 +25,13 @@
 
 @(require
    @(only-in scribble/bnf nonterm)
+   @(only-in collector2/version VERSION)
    @(for-label
-     ;; collector2
      racket/base))
 
+
+@(define upstream-tree
+   "https://gitlab.com/src_prepare/racket/collector2/-/tree/")
 
 @(define (link2overlay pth)
    (let ([overlay
@@ -48,6 +51,8 @@
 @section{About}
 
 Parse Racket catalogs and generate ebuild scripts.
+
+Version: @link[@(string-append upstream-tree @VERSION)]{@VERSION}.
 
 
 @subsection{Upstream}

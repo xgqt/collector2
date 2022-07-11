@@ -36,9 +36,8 @@
 (define collection 'multi)
 
 (define deps
-  '("base"
-    ;; "collector2-lib" -- not yet required
-    ))
+  '("base"))
 
 (define build-deps
-  '("scribble-lib"))
+  '("scribble-lib"
+    "collector2-lib"))
