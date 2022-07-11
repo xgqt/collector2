@@ -28,4 +28,4 @@ export PATH
 
 myroot="$(dirname "${0}")/../"
 
-exec racket "${myroot}/src/collector2/main.rkt" "${@}"
+exec racket "${myroot}/src/collector2-lib/collector2/main.rkt" "${@}"
