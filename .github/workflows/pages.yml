@@ -26,7 +26,7 @@ name: Pages
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
     paths:
       - '**.scrbl'
       - '**pages.yml'
@@ -47,7 +47,7 @@ jobs:
           version: stable
 
       - name: Build docs
-        run: ./scripts/public.sh
+        run: make regen-public
 
       - name: Publish
         uses: peaceiris/actions-gh-pages@v3
