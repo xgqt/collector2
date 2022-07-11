@@ -28,6 +28,7 @@
  racket/cmdline
  racket/class
  (only-in racket/string string-join)
+ "version.rkt"
  "private/generator/generator.rkt"
  "private/generator/name.rkt"
  "private/pkgs/catalogs.rkt")
@@ -119,6 +120,10 @@
     (verbose-filter? #t)
     (verbose-auto-catalog? #t)
     (verbose-exclude? #t)]
+   [("-V" "--version")
+    "Show the version of this program and immediately exit"
+    (printf "Collector2, version ~a on Racket ~a~%" VERSION (version))
+    (exit 0)]
 
    #:once-any
    [("-c" "--create")
