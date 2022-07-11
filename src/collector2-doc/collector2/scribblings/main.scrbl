@@ -129,6 +129,7 @@ The upstream repository can be found on
 Collector2 only generates packages in the "dev-racket" category,
 so to get a functional repository out of collector2's output you have
 to also add in some files:
+
 @itemlist[
  @item{@link2overlay{eclass}es used by generated ebuilds}
  @item{@link2overlay{profiles/categories}}

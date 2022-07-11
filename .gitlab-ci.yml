@@ -31,7 +31,7 @@ stages:
   - pages
 
 
-image: racket/racket:8.3-full
+image: racket/racket:8.5-full
 
 before_script:
   - apt-get update
@@ -73,8 +73,7 @@ pages:
       - master
     changes:
       - .gitlab-ci.yml
-      - src/collector2/scribblings/*.scrbl
-      - src/collector2/scribblings/*/*.scrbl
+      - src/**/*.scrbl
 
   artifacts:
     expire_in: 1 week
@@ -82,4 +81,4 @@ pages:
       - public
 
   script:
-    - make public
+    - make regen-public

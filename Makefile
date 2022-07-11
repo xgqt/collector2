@@ -19,13 +19,22 @@
 
 
 MAKE        := make
+RACKET      := racket
+RACO        := raco
+SCRIBBLE    := $(RACO) scribble
 SH          := sh
+RM          := rm
+RMDIR       := $(RM) -r
+
+BINDIR      := $(PWD)/bin
+DOCSDIR     := $(PWD)/docs
+PUBLICDIR   := $(PWD)/public
+SCRIPTSDIR  := $(PWD)/scripts
+SRCDIR      := $(PWD)/src
+TESTSDIR    := $(PWD)/tests
 
 
-.PHONY: all src-make-%
-.PHONY: clean compile install setup test remove
-.PHONY: public-clean public-regen
-
+.PHONY: all
 all: clean compile
 
 
@@ -33,27 +42,60 @@ src-make-%:
 	$(MAKE) -C $(PWD)/src DEPS-FLAGS=" --no-pkg-deps " $(*)
 
 
+.PHONY: clean
 clean: src-make-clean
 
+.PHONY: compile
 compile: src-make-compile
 
+.PHONY: isntall
 install: src-make-install
 
+.PHONY: setup
+setup: install
 setup: src-make-setup
 
+.PHONY: test
+test: install
 test: src-make-test
 
+.PHONY: remove
 remove: src-make-remove
 
 
-bin: src-make-exe
-	cp -r ./src/bin .
-
-
 public:
-	$(SH) $(PWD)/scripts/public.sh
+	mkdir -p $(PUBLICDIR)
 
-public-clean:
-	rm -dfr $(PWD)/public
+.PHONY: docs-html
+docs-html: public
+	cd $(DOCSDIR) && $(SCRIBBLE) ++main-xref-in --dest $(PWD) \
+		--dest-name public --htmls --quiet $(DOCSDIR)/scribblings/main.scrbl
 
-public-regen: public-clean public
+.PHONY: docs-latex
+docs-latex: public
+	$(RACKET) $(SCRIPTSDIR)/doc.rkt latex
+
+.PHONY: docs-markdown
+docs-markdown: public
+	$(RACKET) $(SCRIPTSDIR)/doc.rkt markdown
+
+.PHONY: docs-pdf
+docs-pdf: public
+	$(RACKET) $(SCRIPTSDIR)/doc.rkt pdf
+
+.PHONY: docs-text
+docs-text: public
+	$(RACKET) $(SCRIPTSDIR)/doc.rkt text
+
+.PHONY: docs-public
+docs-public: docs-html
+
+.PHONY: docs-all
+docs-all: docs-html docs-latex docs-markdown docs-pdf docs-text
+
+.PHONY: clean-public
+clean-public:
+	if [ -d $(PUBLICDIR) ] ; then $(RMDIR) $(PUBLICDIR) ; fi
+
+.PHONY: regen-public
+regen-public: clean-public docs-public

@@ -24,22 +24,8 @@
 #lang info
 
 
-(define pkg-authors '(xgqt))
+(define test-omit-paths
+  '("scribblings"))
 
-(define pkg-desc
-  "Parse Racket catalogs and generate ebuild scripts. Metapackage.")
-
-(define version "5.2.1")
-
-(define license 'GPL-3.0-only)
-
-(define collection 'multi)
-
-(define deps
-  '("base"
-    "collector2-doc"
-    "collector2-lib"
-    "collector2-test"))
-
-(define build-deps
-  '())
+(define scribblings
+  '(("scribblings/main.scrbl" (multi-page) (tool) "collector2")))

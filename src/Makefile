@@ -1,131 +1,56 @@
-# This file is part of collector2.
-
-# collector2 is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, version 3.
-
-# collector2 is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License
-# along with collector2.  If not, see <https://www.gnu.org/licenses/>.
-
-# Original author: Maciej Barć <xgqt@riseup.net>
-# Copyright (c) 2021-2022, src_prepare group
-# Licensed under the GNU GPL v3 License
-# SPDX-License-Identifier: GPL-3.0-only
-
-
-PACKAGE-NAME    := collector2
-PACKAGE-EXE     := $(PACKAGE-NAME)
-PACKAGE-BIN-DIR := ./bin
-PACKAGE-DOC-DIR := ./doc
-PACKAGE-SCRBL   := $(PACKAGE-NAME)/scribblings/$(PACKAGE-NAME).scrbl
-PACKAGE-BIN     := $(PACKAGE-BIN-DIR)/$(PACKAGE-EXE)
-PACKAGE-ZIP     := $(PACKAGE-NAME).zip
-
-LN              := ln -fs
-MKDIR           := mkdir -p
+MAKE            := make
 RACKET          := racket
 RACO            := raco
-SCRBL           := $(RACO) scribble
+SCRIBBLE        := $(RACO) scribble
 
-ENTRYPOINT      := $(PACKAGE-NAME)/main.rkt
-COMPILE-FLAGS   := -v
-RUN-FLAGS       :=
-SCRBL-FLAGS     := --dest $(PACKAGE-DOC-DIR) ++main-xref-in
-EXE-FLAGS       := --orig-exe -v -o $(PACKAGE-BIN)
 DO-DOCS         := --no-docs
 INSTALL-FLAGS   := --auto --skip-installed $(DO-DOCS)
+REMOVE-FLAGS    := --force --no-trash $(DO-DOCS)
 DEPS-FLAGS      := --check-pkg-deps --unused-pkg-deps
+SETUP-FLAGS     := --tidy --avoid-main $(DEPS-FLAGS)
 TEST-FLAGS      := --heartbeat --no-run-if-absent --submodule test --table
 
+all: clean compile
 
-all:				install setup test
+clean-pkg-%:
+	find $(*) -type d -name 'compiled' -exec rm -dr {} +
+compile-pkg-%:
+	$(RACKET) -e "(require compiler/compiler setup/getinfo) (compile-directory-zos (path->complete-path \"$(*)\") (get-info/full \"$(*)/info.rkt\") #:skip-doc-sources? #t #:verbose #f)"
+install-pkg-%:
+	cd $(*) && $(RACO) pkg install $(INSTALL-FLAGS)
+setup-pkg-%:
+	$(RACO) setup $(SETUP-FLAGS) --pkgs $(*)
+test-pkg-%:
+	$(RACO) test $(TEST-FLAGS) --package $(*)
+remove-pkg-%:
+	$(RACO) pkg remove $(REMOVE-FLAGS) $(*)
 
-compile:
-	$(RACO) make $(COMPILE-FLAGS) $(ENTRYPOINT)
+clean-pkg-collector2: clean-pkg-collector2-lib clean-pkg-collector2-doc clean-pkg-collector2-test
+clean-pkg-collector2-test: clean-pkg-collector2-lib
 
-run:
-	$(RACKET) $(RUN-FLAGS) $(ENTRYPOINT)
+clean: clean-pkg-collector2-lib clean-pkg-collector2-doc clean-pkg-collector2-test clean-pkg-collector2
 
-install:
-	$(RACO) pkg install $(INSTALL-FLAGS) --name $(PACKAGE-NAME)
+compile-pkg-collector2: compile-pkg-collector2-lib compile-pkg-collector2-doc compile-pkg-collector2-test
+compile-pkg-collector2-test: compile-pkg-collector2-lib
 
+compile: compile-pkg-collector2-lib compile-pkg-collector2-doc compile-pkg-collector2-test compile-pkg-collector2
 
-# Documentation
-# WARNING: package has to be installed first
+install-pkg-collector2: install-pkg-collector2-lib install-pkg-collector2-doc install-pkg-collector2-test
+install-pkg-collector2-test: install-pkg-collector2-lib
 
-docs-dir:
-	$(MKDIR) $(PACKAGE-DOC-DIR)
+install: install-pkg-collector2-lib install-pkg-collector2-doc install-pkg-collector2-test install-pkg-collector2
 
-docs-html:			docs-dir
-	$(SCRBL) --html $(SCRBL-FLAGS) $(PACKAGE-SCRBL)
-	cd $(PACKAGE-DOC-DIR) && $(LN) $(PACKAGE-NAME).html index.html
+setup-pkg-collector2: setup-pkg-collector2-lib setup-pkg-collector2-doc setup-pkg-collector2-test
+setup-pkg-collector2-test: setup-pkg-collector2-lib
 
-docs-latex:			docs-dir
-	$(SCRBL) --latex $(SCRBL-FLAGS) $(PACKAGE-SCRBL)
+setup: setup-pkg-collector2-lib setup-pkg-collector2-doc setup-pkg-collector2-test setup-pkg-collector2
 
-docs-markdown:		docs-dir
-	$(SCRBL) --markdown $(SCRBL-FLAGS) $(PACKAGE-SCRBL)
+test-pkg-collector2: test-pkg-collector2-lib test-pkg-collector2-doc test-pkg-collector2-test
+test-pkg-collector2-test: test-pkg-collector2-lib
 
-docs-text:			docs-dir
-	$(SCRBL) --text $(SCRBL-FLAGS) $(PACKAGE-SCRBL)
+test: test-pkg-collector2-lib test-pkg-collector2-doc test-pkg-collector2-test test-pkg-collector2
 
-docs:				docs-html	docs-latex	docs-markdown	docs-text
+remove-pkg-collector2: remove-pkg-collector2-test remove-pkg-collector2-doc remove-pkg-collector2-lib
+remove-pkg-collector2-test: remove-pkg-collector2-lib
 
-
-# Distribution
-
-exe:				compile
-	$(MKDIR) ./bin
-	$(RACO) exe $(EXE-FLAGS) $(ENTRYPOINT)
-
-# Source only
-pkg:				clean
-	$(RACO) pkg create --source $(PWD)
-
-
-# Removal
-
-distclean:
-	if [ -d $(PACKAGE-BIN-DIR) ] ; then rm -r $(PACKAGE-BIN-DIR) ; fi
-	if [ -f $(PACKAGE-ZIP) ] ; then rm $(PACKAGE-ZIP)* ; fi
-
-clean:				distclean
-	find . -depth -type d -name 'compiled' -exec rm -r {} \;
-	find . -depth -type d -name 'doc'      -exec rm -r {} \;
-
-remove:
-	$(RACO) pkg remove $(DO-DOCS) $(PACKAGE-NAME)
-
-purge:				remove clean
-
-reinstall:			remove install
-
-resetup:			reinstall setup
-
-
-# Tests
-
-# This builds docs
-setup:
-	$(RACO) setup --tidy --avoid-main $(DEPS-FLAGS) --pkgs $(PACKAGE-NAME)
-
-check-deps:
-	$(RACO) setup $(DO-DOCS) $(DEPS-FLAGS) $(PACKAGE-NAME)
-
-test-local:
-	$(RACO) test $(TEST-FLAGS) ./$(PACKAGE-NAME)
-
-test:
-	$(RACO) test $(TEST-FLAGS) --package $(PACKAGE-NAME)
-
-
-# Everything
-
-everything-test:	clean compile install setup check-deps test purge
-
-everything-dist:	pkg exe
+remove: remove-pkg-collector2 remove-pkg-collector2-test remove-pkg-collector2-doc remove-pkg-collector2-lib

@@ -21,25 +21,24 @@
 ;; SPDX-License-Identifier: GPL-3.0-only
 
 
-#lang info
+#lang racket/base
+
+(require
+ racket/contract
+ racket/date
+ racket/string)
+
+(provide (all-defined-out))
 
 
-(define pkg-authors '(xgqt))
+(define/contract (epoch->string seconds)
+  (-> integer? string?)
+  "Convert SECONDS (since epoch) to a ISO-8601 date string."
+  (parameterize
+      ([date-display-format 'iso-8601])
+    (date->string (seconds->date seconds))))
 
-(define pkg-desc
-  "Parse Racket catalogs and generate ebuild scripts. Metapackage.")
-
-(define version "5.2.1")
-
-(define license 'GPL-3.0-only)
-
-(define collection 'multi)
-
-(define deps
-  '("base"
-    "collector2-doc"
-    "collector2-lib"
-    "collector2-test"))
-
-(define build-deps
-  '())
+(define/contract (epoch->pv seconds)
+  (-> integer? string?)
+  "Strip elements of `epoch->string' to fit PMS (date-like) version standard."
+  (string-replace (epoch->string seconds) "-" "."))

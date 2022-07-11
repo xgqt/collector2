@@ -21,27 +21,11 @@
 ;; SPDX-License-Identifier: GPL-3.0-only
 
 
-#lang racket/base
-
-(require
- racket/contract
- racket/date
- racket/string
- )
-
-(provide (all-defined-out))
+#lang info
 
 
-(define/contract (epoch->string seconds)
-  (-> integer? string?)
-  "Convert SECONDS (since epoch) to a ISO-8601 date string."
-  (parameterize ([date-display-format 'iso-8601])
-    (date->string (seconds->date seconds))
-    )
-  )
+(define racket-launcher-names
+  '("collector2"))
 
-(define/contract (epoch->pv seconds)
-  (-> integer? string?)
-  "Strip elements of `epoch->string' to fit PMS (date-like) version standard."
-  (string-replace (epoch->string seconds) "-" ".")
-  )
+(define racket-launcher-libraries
+  '("main.rkt"))

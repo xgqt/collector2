@@ -33,13 +33,6 @@
   (-> integer? string?)
   (make-string num #\-))
 
-(define separator (make-separator 25))
 
-
-(module+ test
-  (require rackunit)
-
-  (check-equal? (make-separator 0) "")
-  (check-equal? (make-separator 3) "---")
-  (check-equal? (make-separator 25) separator)
-  )
+(define separator
+  (make-separator 25))

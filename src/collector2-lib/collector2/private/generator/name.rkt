@@ -21,25 +21,21 @@
 ;; SPDX-License-Identifier: GPL-3.0-only
 
 
-#lang info
+#lang racket/base
+
+(require
+ racket/string)
+
+(provide make-valid-name)
 
 
-(define pkg-authors '(xgqt))
+;; asd-9 is a invalid name
+;; WORKAROUND: asd-9 -> asd9
 
-(define pkg-desc
-  "Parse Racket catalogs and generate ebuild scripts. Metapackage.")
-
-(define version "5.2.1")
-
-(define license 'GPL-3.0-only)
-
-(define collection 'multi)
-
-(define deps
-  '("base"
-    "collector2-doc"
-    "collector2-lib"
-    "collector2-test"))
-
-(define build-deps
-  '())
+(define (make-valid-name name)
+  (let ([mname name]
+        [invalid-numbers (regexp-match* #rx"-[0-9]" name)])
+    (for ([in invalid-numbers])
+      ;; FIXME: regex ?
+      (set! mname (string-replace mname in (string-trim in "-"))))
+    (string-downcase mname)))

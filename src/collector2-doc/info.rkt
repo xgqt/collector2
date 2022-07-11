@@ -27,7 +27,7 @@
 (define pkg-authors '(xgqt))
 
 (define pkg-desc
-  "Parse Racket catalogs and generate ebuild scripts. Metapackage.")
+  "Parse Racket catalogs and generate ebuild scripts. Documentation.")
 
 (define version "5.2.1")
 
@@ -37,9 +37,8 @@
 
 (define deps
   '("base"
-    "collector2-doc"
-    "collector2-lib"
-    "collector2-test"))
+    ;; "collector2-lib" -- not yet required
+    ))
 
 (define build-deps
-  '())
+  '("scribble-lib"))

@@ -26,7 +26,7 @@
 
 (define pkg-authors '(xgqt))
 
-(define pkg-desc "Parse Racket catalogs and generate ebuild scripts")
+(define pkg-desc "Parse Racket catalogs and generate ebuild scripts. Core.")
 
 (define version "5.2.1")
 
@@ -43,5 +43,4 @@
     "upi-lib"))
 
 (define build-deps
-  '("rackunit-lib"
-    "scribble-lib"))
+  '())

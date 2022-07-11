@@ -23,18 +23,15 @@
 
 #lang racket/base
 
-(require
- racket/string)
 
-(provide make-valid-name)
+(module+ test
+  (require
+   rackunit
+   collector2/private/epoch/epoch)
 
+  (check-equal? (epoch->string 0) "1970-01-01")
+  (check-equal? (epoch->string 1622077200) "2021-05-27")
 
-;; asd-9 is a invalid name
-;; WORKAROUND: asd-9 -> asd9
-(define (make-valid-name name)
-  (let ([mname name]
-        [invalid-numbers (regexp-match* #rx"-[0-9]" name)])
-    (for ([in invalid-numbers])
-      ;; FIXME: regex ?
-      (set! mname (string-replace mname in (string-trim in "-"))))
-    (string-downcase mname)))
+  (check-equal? (epoch->pv 0) "1970.01.01")
+  (check-equal? (epoch->pv 1622077200) "2021.05.27")
+  )

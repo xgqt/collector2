@@ -23,17 +23,13 @@
 
 #lang racket/base
 
-(require
- "epoch.rkt"
- )
-
 
 (module+ test
-  (require rackunit)
+  (require
+   rackunit
+   collector2/private/pkgs/separator)
 
-  (check-equal? (epoch->string 0) "1970-01-01")
-  (check-equal? (epoch->string 1622077200) "2021-05-27")
-
-  (check-equal? (epoch->pv 0) "1970.01.01")
-  (check-equal? (epoch->pv 1622077200) "2021.05.27")
+  (check-equal? (make-separator 0) "")
+  (check-equal? (make-separator 3) "---")
+  (check-equal? (make-separator 25) separator)
   )
