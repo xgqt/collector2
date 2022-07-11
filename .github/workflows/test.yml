@@ -45,7 +45,7 @@ jobs:
           variant: ${{ matrix.racket-variant }}
           version: ${{ matrix.racket-version }}
 
-      - name: Instal
+      - name: Install
         run: make install
 
       - name: Setup
