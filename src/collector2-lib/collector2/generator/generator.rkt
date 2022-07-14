@@ -75,30 +75,31 @@
     [(list? v) (car v)]
     [else ""]))
 
+(define (get-circular-dependency all-packages package-name package-data)
+  (for/first
+      ([dependency (hash-ref package-data 'dependencies '())]
+       #:when
+       (let ([dependency-dependencies
+              (~> all-packages
+                  (hash-ref (dep-name dependency) (hash))
+                  (hash-ref 'dependencies '()))])
+         (match dependency-dependencies
+           [(list-no-order (list-no-order (== package-name) _ ...) _ ...)
+            #true]
+           [(list-no-order (== package-name) _ ...)
+            #true]
+           [_
+            #false])))
+    (dep-name dependency)))
+
 
 (define (packages)
   (let ([all-packages (pkgs)])
     (hash-map
      all-packages
      (lambda (name data)
-       (let ([src
-              (data->src data)]
-             [circular
-              (for/first ([dependency (hash-ref data 'dependencies '())]
-                          #:when
-                          (let ([dependency-dependencies
-                                 (~> all-packages
-                                     (hash-ref (dep-name dependency) (hash))
-                                     (hash-ref 'dependencies '()))])
-                            (match dependency-dependencies
-                              [(list-no-order (list-no-order (== name) _ ...)
-                                              _ ...)
-                               #true]
-                              [(list-no-order (== name) _ ...)
-                               #true]
-                              [_
-                               #false])))
-                (dep-name dependency))])
+       (let ([src (data->src data)]
+             [circular (get-circular-dependency all-packages name data)])
          (cond
            [(and circular (string-contains? src "git"))
             (let ([aux-data (hash-ref all-packages circular (hash))])
