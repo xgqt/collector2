@@ -35,9 +35,10 @@
 
 
 (define (action:show)
-  {define r (repository)}
-  (send r show)
-  (printf "\n>>> Packages generated:~a\n" (length (get-field packages r))))
+  (let ([repo (repository)])
+    (send repo show)
+    (printf "~%>>> Packages generated: ~a~%"
+            (length (get-field packages repo)))))
 
 (define (action:create [root "."])
   (send (repository) save-packages (path->complete-path root)))
