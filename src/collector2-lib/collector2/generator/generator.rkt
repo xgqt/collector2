@@ -50,54 +50,63 @@
 (define (archive? str)
   (list? (regexp-match #rx".*.tar.*|.*.zip$" str)))
 
+(define (data->src data)
+  ;; Candidates for source URL.
+  (let ([candidate-1
+         (~> data
+             (hash-ref 'versions (hash))
+             (hash-ref 'default (hash))
+             (hash-ref 'source ""))]
+        [candidate-2
+         (hash-ref data 'source "")])
+    (cond
+      [(or (archive? candidate-1) (equal? candidate-1 ""))
+       (cond
+         [(or (archive? candidate-2) (equal? candidate-2 ""))
+          candidate-1]
+         [else
+          candidate-2])]
+      [else
+       candidate-1])))
+
+(define (dep-name v)
+  (cond
+    [(string? v) v]
+    [(list? v) (car v)]
+    [else ""]))
+
+
 (define (packages)
-  {define apkgs (pkgs)}
-  (hash-map
-   apkgs
-   (lambda (name data)
-     {define (data->src data)
-       (let ; candidates for source URL
-           ([c1 (~> data
-                    (hash-ref 'versions (hash))
-                    (hash-ref 'default  (hash))
-                    (hash-ref 'source   ""))]
-            [c2 (hash-ref data 'source "")])
-           (if (or (archive? c1) (equal? c1 ""))
-               (if (or (archive? c2) (equal? c2 ""))
-                   c1
-                   c2)
-               c1))}
-     {define src (data->src data)}
-     {define circular
-       (for/first
-           ([dependency (hash-ref data 'dependencies '())]
-            #:when
-            (let* ([dependency-name
-                    (cond
-                      [(string? dependency)  dependency]
-                      [(list?   dependency)  (car dependency)]
-                      [else  ""])]
-                   [dependency-dependencies
-                    (~> apkgs
-                        (hash-ref dependency-name (hash))
-                        (hash-ref 'dependencies '()))])
-              (match dependency-dependencies
-                [(list-no-order (list-no-order (== name) _ ...) _ ...)  #t]
-                [(list-no-order (== name) _ ...)  #t]
-                [_  #f])))
+  (let ([all-packages (pkgs)])
+    (hash-map
+     all-packages
+     (lambda (name data)
+       (let ([src
+              (data->src data)]
+             [circular
+              (for/first ([dependency (hash-ref data 'dependencies '())]
+                          #:when
+                          (let ([dependency-dependencies
+                                 (~> all-packages
+                                     (hash-ref (dep-name dependency) (hash))
+                                     (hash-ref 'dependencies '()))])
+                            (match dependency-dependencies
+                              [(list-no-order (list-no-order (== name) _ ...)
+                                              _ ...)
+                               #true]
+                              [(list-no-order (== name) _ ...)
+                               #true]
+                              [_
+                               #false])))
+                (dep-name dependency))])
          (cond
-           [(string? dependency)  dependency]
-           [(list?   dependency)  (car dependency)]
-           [else  ""]))}
-     (cond
-       [(and circular (string-contains? src "git"))
-        {define aux-data
-          (hash-ref apkgs circular (hash))}
-        (make-cir name src data circular (data->src aux-data) aux-data)]
-       [(string-contains? src "git")
-        (make-gh name src data)]
-       [else
-        (make-archive name src data)]))))
+           [(and circular (string-contains? src "git"))
+            (let ([aux-data (hash-ref all-packages circular (hash))])
+              (make-cir name src data circular (data->src aux-data) aux-data))]
+           [(string-contains? src "git")
+            (make-gh name src data)]
+           [else
+            (make-archive name src data)]))))))
 
 (define (repository)
   (new repository%
