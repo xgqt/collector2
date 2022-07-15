@@ -33,15 +33,16 @@
  "make.rkt")
 
 (provide
- ;; from pkgs.rkt
+ ;; From pkgs.rkt
  hard-excluded
  soft-excluded
  verbose-filter?
- ;; from lookup.rkt
+ ;; From lookup.rkt
  verbose-info-lookup?
- ;; from make.rkt
+ ;; From make.rkt
  package-category
- ;; local
+ license-lookup?
+ ;; Local
  packages
  repository)
 

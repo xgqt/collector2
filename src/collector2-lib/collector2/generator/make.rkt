@@ -36,6 +36,7 @@
  "name.rkt")
 
 (provide
+ license-lookup?
  make-archive
  make-cir
  make-gh
@@ -72,12 +73,17 @@
       (regexp-replace #rx"#.*" _ "")
       (regexp-replace ".git$" _ "")))
 
+(define license-lookup?
+  (make-parameter #true))
+
 (define (pick-license src data)
   (cond
     [(hash-ref data 'license #false)
      => (lambda (lic) (identify-license lic))]
+    [(license-lookup?)
+     (info-lookup/license src)]
     [else
-     (info-lookup/license src)]))
+     "all-rights-reserved"]))
 
 
 ;; In case of zip the archive snapshots are not kept,
