@@ -74,7 +74,7 @@
       (regexp-replace ".git$" _ "")))
 
 (define license-lookup?
-  (make-parameter #true))
+  (make-parameter #false))
 
 (define (pick-license src data)
   (cond

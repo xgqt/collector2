@@ -104,9 +104,9 @@
     "Set the directory for \"create\" option"
     (create-directory directory)]
 
-   [("--no-license-lookup")
-    "Do not query package remotes for licenses"
-    (license-lookup? #false)]
+   [("--license-lookup")
+    "Query package remotes for licenses"
+    (license-lookup? #true)]
    [("--package-category")
     category
     "Set the category name to be used for generated packages"
