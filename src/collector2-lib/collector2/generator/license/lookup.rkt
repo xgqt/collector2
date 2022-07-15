@@ -34,13 +34,13 @@
 (provide (all-defined-out))
 
 
-(define verbose-remote-info-file-license
-  (make-parameter #true))
+(define verbose-info-lookup?
+  (make-parameter #false))
 
 
 ;; Remember to guard this call by checking if a git repository URL is passed.
 
-(define (remote-info-file-license pkg-url-string)
+(define (info-lookup/license pkg-url-string)
   (let* ([info-file (download-pkg-info-file pkg-url-string)]
          [info-dir (and info-file (dirname info-file))]
          [pkg-license
@@ -49,7 +49,7 @@
              ;; There are cases we can get a malformed "info.rkt" file.
              (with-handlers ([exn:fail?
                               (lambda (captured-exn)
-                                (when (verbose-remote-info-file-license)
+                                (when (verbose-info-lookup?)
                                   (printf "Error retrieving ~v data:~%~v~%"
                                           pkg-url-string
                                           (exn-message captured-exn)))
@@ -60,7 +60,7 @@
                    identify-license))]
             [else
              "all-rights-reserved"])])
-    (when (verbose-remote-info-file-license)
+    (when (verbose-info-lookup?)
       (printf "Got license ~v from URL ~v.~%" pkg-license pkg-url-string))
     (when (and info-dir (directory-exists? info-dir))
       (delete-directory/files info-dir))

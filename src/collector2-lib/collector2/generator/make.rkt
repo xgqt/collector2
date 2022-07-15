@@ -77,7 +77,7 @@
     [(hash-ref data 'license #false)
      => (lambda (lic) (identify-license lic))]
     [else
-     (remote-info-file-license src)]))
+     (info-lookup/license src)]))
 
 
 ;; In case of zip the archive snapshots are not kept,

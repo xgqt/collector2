@@ -103,10 +103,12 @@
     directory
     "Set the directory for \"create\" option"
     (create-directory directory)]
+
    [("--package-category")
     category
     "Set the category name to be used for generated packages"
     (package-category category)]
+
    [("--verbose-auto-catalog")
     "Show if automatically setting the Racket catalogs"
     (verbose-auto-catalog? #t)]
@@ -116,11 +118,16 @@
    [("--verbose-filter")
     "Show filtered packages"
     (verbose-filter? #t)]
+   [("--verbose-info-lookup")
+    "Show messages of package remotes being queried for \"info.rkt\" files"
+    (verbose-info-lookup? #t)]
    [("-v" "--verbose")
     "Increase verbosity (enable other verbosity switches)"
     (verbose-filter? #t)
     (verbose-auto-catalog? #t)
-    (verbose-exclude? #t)]
+    (verbose-exclude? #t)
+    (verbose-info-lookup? #t)]
+
    [("-V" "--version")
     "Show the version of this program and immediately exit"
     (printf "Collector2, version ~a on Racket ~a~%" VERSION (version))

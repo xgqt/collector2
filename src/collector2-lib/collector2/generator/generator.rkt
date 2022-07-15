@@ -29,6 +29,7 @@
  ebuild
  threading
  "../pkgs/pkgs.rkt"
+ "license/lookup.rkt"
  "make.rkt")
 
 (provide
@@ -36,6 +37,8 @@
  hard-excluded
  soft-excluded
  verbose-filter?
+ ;; from lookup.rkt
+ verbose-info-lookup?
  ;; from make.rkt
  package-category
  ;; local
