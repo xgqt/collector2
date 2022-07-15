@@ -31,6 +31,8 @@
  "../epoch.rkt"
  "../repo.rkt"
  "classes.rkt"
+ "license/identify.rkt"
+ "license/lookup.rkt"
  "name.rkt")
 
 (provide
@@ -47,9 +49,9 @@
                 (hash-ref 'default  (hash))
                 (hash-ref 'checksum ""))]
         [c2 (hash-ref data 'checksum "")])
-    (if (equal? c1 "")
-        c2
-        c1)))
+    (cond
+      [(equal? c1 "") c2]
+      [else c1])))
 
 (define (make-valid-description name description)
   (cond
@@ -70,6 +72,13 @@
       (regexp-replace #rx"#.*" _ "")
       (regexp-replace ".git$" _ "")))
 
+(define (pick-license src data)
+  (cond
+    [(hash-ref data 'license #false)
+     => (lambda (lic) (identify-license lic))]
+    [else
+     (remote-info-file-license src)]))
+
 
 ;; In case of zip the archive snapshots are not kept,
 ;; nor any reference to them (versions/snapshots) is required to exist,
@@ -85,66 +94,78 @@
 (define (make-archive name src data)
   {define my-ebuild
     (new ebuild-rkt%
-         [custom         (list (lambda () "PROPERTIES=live"))]
-         [DESCRIPTION    (make-valid-description name (hash-ref data 'description ""))]
-         [HOMEPAGE       (format "https://pkgs.racket-lang.org/package/~a" name)]
-         [RACKET_DEPEND  (hash-ref data 'dependencies '())]
-         [SRC_URI        '()]
-         [S              "${WORKDIR}/${PN}"]
-         [KEYWORDS       '("~amd64")]  ; unfortunately many pkgs depend on zips
-         [body           (list (lambda () (archive-body src)))])}
+         [custom        (list (lambda () "PROPERTIES=live"))]
+         [DESCRIPTION   (make-valid-description name (hash-ref data 'description ""))]
+         [HOMEPAGE      (format "https://pkgs.racket-lang.org/package/~a" name)]
+         [RACKET_DEPEND (hash-ref data 'dependencies '())]
+         [SRC_URI       '()]
+         [S             "${WORKDIR}/${PN}"]
+         [KEYWORDS      '("~amd64")]  ; unfortunately many pkgs depend on zips
+         [body          (list (lambda () (archive-body src)))])}
   (new package%
-       [CATEGORY  (package-category)]
-       [PN        (make-valid-name name)]
-       [ebuilds   (hash (live-version) my-ebuild)]
-       [metadata  (new metadata%)]))
+       [CATEGORY (package-category)]
+       [PN       (make-valid-name name)]
+       [ebuilds  (hash (live-version) my-ebuild)]
+       [metadata (new metadata%)]))
 
 
 (define (make-cir main-name main-src main-data aux-name aux-src aux-data)
-  (let* ([main-snapshot  (epoch->pv (hash-ref main-data 'last-updated 0))]
+  (let* ([main-snapshot
+          (epoch->pv (hash-ref main-data 'last-updated 0))]
+         [license (pick-license main-src main-data)]
          [ebuild
           (new ebuild-rkt-cir%
-               [MAIN_URI  (normalize-url-string main-src)]
-               [MAIN_PH   (get-commit-hash main-data)]
-               [MAIN_S    (or (query-path main-src) "")]
-               [AUX_URI   (normalize-url-string aux-src)]
-               [AUX_PH    (get-commit-hash aux-data)]
-               [AUX_S     (or (query-path aux-src) "")]
-               [AUX_PKG   aux-name]
+               [MAIN_URI (normalize-url-string main-src)]
+               [MAIN_PH  (get-commit-hash main-data)]
+               [MAIN_S   (or (query-path main-src) "")]
+               [AUX_URI  (normalize-url-string aux-src)]
+               [AUX_PH   (get-commit-hash aux-data)]
+               [AUX_S    (or (query-path aux-src) "")]
+               [AUX_PKG  aux-name]
                [RACKET_DEPEND
                 (remove aux-name  ; dep we want to rm might be a list
                         (~>> main-data
                              (hash-ref _ 'dependencies '())
                              (map (lambda (v) (if (list? v) (car v) v)))))]
                [DESCRIPTION
-                (make-valid-description
-                 main-name (hash-ref main-data 'description ""))]
+                (make-valid-description main-name
+                                        (hash-ref main-data 'description ""))]
                [HOMEPAGE
-                (format "https://pkgs.racket-lang.org/package/~a" main-name)])])
-
+                (format "https://pkgs.racket-lang.org/package/~a" main-name)]
+               [LICENSE license]
+               [RESTRICT
+                (if (equal? license "all-rights-reserved")
+                    '("mirror")
+                    '())])])
     (new package%
-         [CATEGORY  (package-category)]
-         [PN        (make-valid-name main-name)]
+         [CATEGORY (package-category)]
+         [PN       (make-valid-name main-name)]
          ;; FIXME: handle no commit hash? & pick higher snapshot?
-         [ebuilds   (hash (simple-version main-snapshot) ebuild)]
-         [metadata  (new metadata%)])))
+         [ebuilds  (hash (simple-version main-snapshot) ebuild)]
+         [metadata (new metadata%)])))
 
 
 (define (make-gh name src data)
-  (let* ([snapshot   (epoch->pv (hash-ref data 'last-updated 0))]
-         [gh_dom     (url-top src)]
-         [gh_repo    (string->repo src)]
-         [gh_web     (string-append "https://" gh_dom "/" gh_repo)]
-         [gh_commit  (get-commit-hash data)]
+  (let* ([snapshot  (epoch->pv (hash-ref data 'last-updated 0))]
+         [gh_dom    (url-top src)]
+         [gh_repo   (string->repo src)]
+         [gh_web    (string-append "https://" gh_dom "/" gh_repo)]
+         [gh_commit (get-commit-hash data)]
+         [license   (pick-license src data)]
          [my-ebuild%
           (class ebuild-rkt-gh%
             (super-new
-             [GH_DOM   gh_dom]
-             [GH_REPO  gh_repo]
+             [GH_DOM  gh_dom]
+             [GH_REPO gh_repo]
              [DESCRIPTION
               (make-valid-description name (hash-ref data 'description ""))]
-             [HOMEPAGE  ""]  ; ebuild-gh class will set this
-             [RACKET_DEPEND  (hash-ref data 'dependencies '())]
+             [HOMEPAGE ""]  ; ebuild-gh class will set this
+             [LICENSE license]
+             [RESTRICT
+              (if (equal? license "all-rights-reserved")
+                  '("mirror")
+                  '())]
+             [RACKET_DEPEND (hash-ref data 'dependencies '())]
              [S
               (cond
                 [(query-path src)
@@ -161,9 +182,8 @@
                 (hash-set live-version-only  ; live version
                           (simple-version snapshot)  ; + generated from "snapshot"
                           (new my-ebuild%
-                               [GH_COMMIT  gh_commit]
-                               [KEYWORDS   '("~amd64")]
-                               ))
+                               [GH_COMMIT gh_commit]
+                               [KEYWORDS  '("~amd64")]))
                 ;; when it does not match
                 live-version-only  ; live version only
                 ))]
@@ -175,7 +195,7 @@
              [("gitlab.com") (list (remote-id 'gitlab gh_repo))]
              [else '()]))])
     (new package%
-         [CATEGORY  (package-category)]
-         [PN        (make-valid-name name)]
-         [ebuilds   my-ebuilds]
-         [metadata  (new metadata% [upstream my-upstream])])))
+         [CATEGORY (package-category)]
+         [PN       (make-valid-name name)]
+         [ebuilds  my-ebuilds]
+         [metadata (new metadata% [upstream my-upstream])])))

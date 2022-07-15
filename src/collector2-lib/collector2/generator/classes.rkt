@@ -60,9 +60,8 @@
   (class %
     (init-field [RACKET_DEPEND '()])
     (super-new
-     [EAPI      8]
-     [inherits  '("racket")]
-     [RESTRICT  '("mirror")])
+     [EAPI     8]
+     [inherits '("racket")])
     (inherit-field BDEPEND RDEPEND)
 
     (define/private (unroll-RACKET_DEPEND)
@@ -80,7 +79,7 @@
 
 ;; Class for resolving circular dependencies in some racket packages
 (define ebuild-rkt-cir%
-  (class (ebuild-rkt-mixin ebuild%)
+  (class ebuild-rkt%
     (init-field MAIN_URI MAIN_PH MAIN_S
                 AUX_URI AUX_PH AUX_S AUX_PKG)
     (super-new

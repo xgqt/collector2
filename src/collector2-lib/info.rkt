@@ -40,7 +40,8 @@
     "ebuild-lib"
     "ebuild-templates"
     "threading-lib"
-    "upi-lib"))
+    "upi-lib"
+    "uuid"))
 
 (define build-deps
   '())
