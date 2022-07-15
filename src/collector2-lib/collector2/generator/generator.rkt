@@ -96,20 +96,23 @@
             #false])))
     (dep-name dependency)))
 
+(define (make-package name data all-packages)
+  (let ([src (data->src data)]
+        [circular (get-circular-dependency all-packages name data)])
+    (cond
+      [(and circular (string-contains? src "git"))
+       (let ([aux-data (hash-ref all-packages circular (hash))])
+         (make-cir name src data circular (data->src aux-data) aux-data))]
+      [(string-contains? src "git")
+       (make-gh name src data)]
+      [else
+       (make-archive name src data)])))
+
 
 (define (packages)
   (let ([all-packages (pkgs)])
     (for/list ([(name data) (in-hash all-packages)])
-      (let ([src (data->src data)]
-            [circular (get-circular-dependency all-packages name data)])
-        (cond
-          [(and circular (string-contains? src "git"))
-           (let ([aux-data (hash-ref all-packages circular (hash))])
-             (make-cir name src data circular (data->src aux-data) aux-data))]
-          [(string-contains? src "git")
-           (make-gh name src data)]
-          [else
-           (make-archive name src data)])))))
+      (make-package name data all-packages))))
 
 (define (repository)
   (new repository%
