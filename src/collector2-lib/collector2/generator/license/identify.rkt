@@ -38,6 +38,9 @@
            (regexp-replace ".0" _ "")
            (regexp-replace "-only" _ "")
            (regexp-replace "-or-later" _ "+"))]
+      ;; BSD-3-Clause is the "original" BSD license
+      [(equal? license-string "BSD-3-Clause")
+       "BSD"]
       [(regexp-match "BSD" license-string)
        (regexp-replace "-Clause" license-string "")]
       [else
