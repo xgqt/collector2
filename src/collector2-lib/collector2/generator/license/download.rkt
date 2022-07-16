@@ -28,7 +28,8 @@
  threading
  uuid
  (only-in racket/file make-directory*)
- "../../repo.rkt")
+ "../../repo.rkt"
+ "../../temp-dir.rkt")
 
 (provide (all-defined-out))
 
@@ -48,11 +49,7 @@
   (let* ([pkg-dom (url-top pkg-url-string)]
          [pkg-repo (string->repo pkg-url-string)]
          [pkg-path (query-path pkg-url-string)]
-         [temp-path
-          (build-path (find-system-path 'temp-dir)
-                      "racket"
-                      "collector2"
-                      (uuid-string))]
+         [temp-path (build-path (temp-dir) (uuid-string))]
          [info-file (build-path temp-path "info.rkt")]
          [download-url-format
           (hash-ref download-format-alias pkg-dom #false)])

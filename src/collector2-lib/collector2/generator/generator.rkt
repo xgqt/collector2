@@ -24,8 +24,9 @@
 #lang racket/base
 
 (require
- racket/string
  racket/match
+ racket/promise
+ racket/string
  ebuild
  threading
  "../pkgs/pkgs.rkt"
@@ -109,12 +110,61 @@
        (make-archive name src data)])))
 
 
-(define (packages)
-  (let ([all-packages (pkgs)])
-    (for/list ([(name data) (in-hash all-packages)])
-      (make-package name data all-packages))))
+(define (packages [only-packages '()])
+  (let ([all-packages
+         (cond
+           [(null? only-packages)
+            (pkgs)]
+           [else
+            (for/hash ([(name data) (pkgs)]
+                       #:when (member name only-packages))
+              (values name data))])]
+        [results '()]
+        [active-workers '()]
+        [make-worker
+         (lambda (name data all-packages)
+           (delay/thread (make-package name data all-packages)))])
+    (for ([(name data) (in-hash all-packages)])
+      (let ([len-active-workers (length active-workers)])
+        (log-warning "[INFO] Making: ~v (currently running: ~a)~%"
+                     name
+                     len-active-workers)
+        (cond
+          [(>= len-active-workers 10)
+           (let ([head-worker (car active-workers)])
+             ;; Force the head-worker.
+             (force head-worker)
+             ;; Check if any other workers are ready.
+             (set! active-workers
+                   (for/fold ([running-workers '()]
+                              #:result (reverse running-workers))
+                             ([active-worker (in-list active-workers)])
+                     (cond
+                       ;; Worker is ready.
+                       [(promise-forced? active-worker)
+                        (set! results
+                              `(,@results
+                                ,(force active-worker)))
+                        (values running-workers)]
+                       ;; Worker is still running.
+                       [else
+                        (values (cons active-worker running-workers))])))
+             ;; Then spawn another worker on the tail.
+             (set! active-workers
+                   `(,@active-workers
+                     ,(make-worker name data all-packages))))]
+          [else
+           ;; Spawn.
+           (set! active-workers
+                 `(,@active-workers
+                   ,(make-worker name data all-packages)))])))
+    (for ([active-worker active-workers])
+      (set! results
+            `(,@results
+              ,(force active-worker))))
+    results))
 
-(define (repository)
+(define (repository [only-packages '()])
   (new repository%
        [name "racket-overlay"]
-       [packages (packages)]))
+       [packages (packages only-packages)]))

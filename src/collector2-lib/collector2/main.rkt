@@ -25,10 +25,12 @@
 
 
 (require
- racket/cmdline
  racket/class
+ racket/cmdline
+ (only-in racket/file delete-directory/files)
  (only-in racket/string string-join)
  "version.rkt"
+ "temp-dir.rkt"
  "generator/generator.rkt"
  "generator/name.rkt"
  "pkgs/catalogs.rkt")
@@ -44,13 +46,15 @@
   (send (repository) save-packages (path->complete-path root)))
 
 (define (action:only-packages package-names action [root "."])
-  (let ([packages (get-field packages (repository))])
-    (for ([package-name package-names])
-      (for/first ([package packages]
-                  #:when (equal? (get-field PN package) package-name))
-        (case action
-          [(create) (send package save root)]
-          [(show)   (send package show)])))))
+  (let ([packages (get-field packages (repository package-names))])
+    (cond
+      [(null? packages)
+       (displayln "[WARNING] No packages generated!")]
+      [else
+       (for ([package packages])
+         (case action
+           [(create) (send package save root)]
+           [(show)   (send package show)]))])))
 
 
 (module+ main
@@ -163,4 +167,7 @@
      (case (action)
        [(create) (action:create (create-directory))]
        [(show)   (action:show)])])
+
+  (when (and (equal? (action) 'create) (directory-exists? (temp-dir)))
+    (delete-directory/files (temp-dir)))
   )
