@@ -98,21 +98,24 @@
        sh-function->string))
 
 (define (make-archive name src data)
-  {define my-ebuild
-    (new ebuild-rkt%
-         [custom        (list (lambda () "PROPERTIES=live"))]
-         [DESCRIPTION   (make-valid-description name (hash-ref data 'description ""))]
-         [HOMEPAGE      (format "https://pkgs.racket-lang.org/package/~a" name)]
-         [RACKET_DEPEND (hash-ref data 'dependencies '())]
-         [SRC_URI       '()]
-         [S             "${WORKDIR}/${PN}"]
-         [KEYWORDS      '("~amd64")]  ; unfortunately many pkgs depend on zips
-         [body          (list (lambda () (archive-body src)))])}
-  (new package%
-       [CATEGORY (package-category)]
-       [PN       (make-valid-name name)]
-       [ebuilds  (hash (live-version) my-ebuild)]
-       [metadata (new metadata%)]))
+  (let ([my-ebuild
+         (new ebuild-rkt%
+              [custom        (list (lambda () "PROPERTIES=live"))]
+              [DESCRIPTION
+               (make-valid-description name (hash-ref data 'description ""))]
+              [HOMEPAGE
+               (format "https://pkgs.racket-lang.org/package/~a" name)]
+              [RACKET_DEPEND (hash-ref data 'dependencies '())]
+              [SRC_URI       '()]
+              [S             "${WORKDIR}/${PN}"]
+              [RESTRICT      '("mirror")]
+              [KEYWORDS      '("~amd64")]  ; many pkgs depend on zips
+              [body          (list (lambda () (archive-body src)))])])
+    (new package%
+         [CATEGORY (package-category)]
+         [PN       (make-valid-name name)]
+         [ebuilds  (hash (live-version) my-ebuild)]
+         [metadata (new metadata%)])))
 
 
 (define (make-cir main-name main-src main-data aux-name aux-src aux-data)
