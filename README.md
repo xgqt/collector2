@@ -52,7 +52,7 @@ raco pkg install collector2
 Quick install using Make
 
 ```sh
-(cd ./src && make install)
+make -C src install
 ```
 
 ## Dependencies
