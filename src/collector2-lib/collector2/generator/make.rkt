@@ -23,25 +23,23 @@
 
 #lang racket/base
 
-(require
- racket/string
- ebuild
- threading
- upi/basename
- "../epoch.rkt"
- "../repo.rkt"
- "classes.rkt"
- "license/identify.rkt"
- "license/lookup.rkt"
- "name.rkt")
+(require racket/string
+         ebuild
+         threading
+         upi/basename
+         "../epoch.rkt"
+         "../repo.rkt"
+         "classes.rkt"
+         "license/identify.rkt"
+         "license/lookup.rkt"
+         "name.rkt")
 
-(provide
- license-lookup?
- make-archive
- make-cir
- make-gh
- ;; from classes.rkt
- package-category)
+(provide license-lookup?
+         make-archive
+         make-cir
+         make-gh
+         ;; from classes.rkt
+         package-category)
 
 
 (define (get-commit-hash data)
@@ -185,24 +183,19 @@
           ;; and non-live, otherwise generate only live
           (let ([live-version-only
                  (hash (live-version) (new my-ebuild% [KEYWORDS '()]))])
-            (if (regexp-match-exact?
-                 #rx".*(bitbucket|codeberg|git.sr.ht|github|gitlab).*" gh_dom)
-                ;; when gh_dom matches ^
-                (hash-set live-version-only  ; live version
-                          (simple-version snapshot)  ; + generated from "snapshot"
-                          (new my-ebuild%
-                               [GH_COMMIT gh_commit]
-                               [KEYWORDS  '("~amd64")]))
-                ;; when it does not match
-                live-version-only  ; live version only
-                ))]
+            (hash-set live-version-only  ; live version
+                      (simple-version snapshot)  ; + generated from snapshot
+                      (new my-ebuild%
+                           [GH_COMMIT gh_commit]
+                           [KEYWORDS  '("~amd64")])))]
+         [remote-id
+          (case gh_dom
+            [("github.com") (list (remote-id 'github gh_repo))]
+            [("gitlab.com") (list (remote-id 'gitlab gh_repo))]
+            [("bitbucket.org") (list (remote-id 'bitbucket gh_repo))]
+            [else '()])]
          [my-upstream
-          (upstream
-           '() #f #f gh_web
-           (case gh_dom
-             [("github.com") (list (remote-id 'github gh_repo))]
-             [("gitlab.com") (list (remote-id 'gitlab gh_repo))]
-             [else '()]))])
+          (upstream '() #false #false gh_web remote-id)])
     (new package%
          [CATEGORY (package-category)]
          [PN       (make-valid-name name)]
