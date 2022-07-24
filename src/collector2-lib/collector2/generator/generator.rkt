@@ -41,6 +41,7 @@
          ;; From lookup.rkt
          verbose-info-lookup?
          ;; From make.rkt
+         architectures
          package-category
          license-lookup?)
 

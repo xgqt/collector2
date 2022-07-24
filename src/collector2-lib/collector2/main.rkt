@@ -24,16 +24,15 @@
 #lang racket/base
 
 
-(require
- racket/class
- racket/cmdline
- (only-in racket/file delete-directory/files)
- (only-in racket/string string-join)
- "version.rkt"
- "temp-dir.rkt"
- "generator/generator.rkt"
- "generator/name.rkt"
- "pkgs/catalogs.rkt")
+(require racket/class
+         racket/cmdline
+         (only-in racket/file delete-directory/files)
+         (only-in racket/string string-join string-split)
+         "version.rkt"
+         "temp-dir.rkt"
+         "generator/generator.rkt"
+         "generator/name.rkt"
+         "pkgs/catalogs.rkt")
 
 
 (define (action:show)
@@ -83,7 +82,8 @@
     (let ([valid-name (make-valid-name package)])
       (soft-excluded (append (soft-excluded)
                              (if (equal? package valid-name)
-                                 (list package) (list package valid-name)))))]
+                                 (list package)
+                                 (list package valid-name)))))]
 
    [("-e" "--hard-exclude")
     package
@@ -91,7 +91,8 @@
     (let ([valid-name (make-valid-name package)])
       (hard-excluded (append (hard-excluded)
                              (if (equal? package valid-name)
-                                 (list package) (list package valid-name)))))]
+                                 (list package)
+                                 (list package valid-name)))))]
    [("--only-package")
     package
     "Only create/show the specified package"
@@ -108,6 +109,10 @@
     "Set the directory for \"create\" option"
     (create-directory directory)]
 
+   [("-A" "--architectures")
+    keywords
+    "Architectures keywords (input as one string)"
+    (architectures (string-split keywords))]
    [("--license-lookup")
     "Query package remotes for licenses"
     (license-lookup? #true)]

@@ -34,12 +34,19 @@
          "license/lookup.rkt"
          "name.rkt")
 
-(provide license-lookup?
+(provide architectures
+         license-lookup?
          make-archive
          make-cir
          make-gh
          ;; from classes.rkt
          package-category)
+
+
+;; Keep in sync with the official Racket package.
+;; https://packages.gentoo.org/packages/dev-scheme/racket
+(define architectures
+  (make-parameter '("~amd64" "~arm" "~ppc" "~ppc64" "~x86")))
 
 
 (define (get-commit-hash data)
@@ -107,7 +114,7 @@
               [SRC_URI       '()]
               [S             "${WORKDIR}/${PN}"]
               [RESTRICT      '("mirror")]
-              [KEYWORDS      '("~amd64")]  ; many pkgs depend on zips
+              [KEYWORDS      (architectures)]
               [body          (list (lambda () (archive-body src)))])])
     (new package%
          [CATEGORY (package-category)]
@@ -140,6 +147,7 @@
                [HOMEPAGE
                 (format "https://pkgs.racket-lang.org/package/~a" main-name)]
                [LICENSE license]
+               [KEYWORDS (architectures)]
                [RESTRICT
                 (if (equal? license "all-rights-reserved")
                     '("mirror")
@@ -187,7 +195,7 @@
                       (simple-version snapshot)  ; + generated from snapshot
                       (new my-ebuild%
                            [GH_COMMIT gh_commit]
-                           [KEYWORDS  '("~amd64")])))]
+                           [KEYWORDS (architectures)])))]
          [remote-id
           (case gh_dom
             [("github.com") (list (remote-id 'github gh_repo))]
