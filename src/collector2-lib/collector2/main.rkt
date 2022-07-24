@@ -113,7 +113,7 @@
     keywords
     "Architectures keywords (input as one string)"
     (architectures (string-split keywords))]
-   [("--license-lookup")
+   [("-L" "--license-lookup")
     "Query package remotes for licenses"
     (license-lookup? #true)]
    [("--package-category")
