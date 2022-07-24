@@ -23,29 +23,26 @@
 
 #lang racket/base
 
-(require
- racket/match
- racket/promise
- racket/string
- ebuild
- threading
- "../pkgs/pkgs.rkt"
- "license/lookup.rkt"
- "make.rkt")
+(require racket/match
+         racket/promise
+         racket/string
+         ebuild
+         threading
+         "../pkgs/pkgs.rkt"
+         "license/lookup.rkt"
+         "make.rkt")
 
-(provide
- ;; From pkgs.rkt
- hard-excluded
- soft-excluded
- verbose-filter?
- ;; From lookup.rkt
- verbose-info-lookup?
- ;; From make.rkt
- package-category
- license-lookup?
- ;; Local
- packages
- repository)
+(provide packages
+         repository
+         ;; From pkgs.rkt
+         hard-excluded
+         soft-excluded
+         verbose-filter?
+         ;; From lookup.rkt
+         verbose-info-lookup?
+         ;; From make.rkt
+         package-category
+         license-lookup?)
 
 
 ;; URLs may contain a placeholder URL with "empty.zip"
