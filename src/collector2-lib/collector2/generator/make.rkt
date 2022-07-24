@@ -113,7 +113,6 @@
               [RACKET_DEPEND (hash-ref data 'dependencies '())]
               [SRC_URI       '()]
               [S             "${WORKDIR}/${PN}"]
-              [RESTRICT      '("mirror")]
               [KEYWORDS      (architectures)]
               [body          (list (lambda () (archive-body src)))])])
     (new package%
@@ -147,11 +146,7 @@
                [HOMEPAGE
                 (format "https://pkgs.racket-lang.org/package/~a" main-name)]
                [LICENSE license]
-               [KEYWORDS (architectures)]
-               [RESTRICT
-                (if (equal? license "all-rights-reserved")
-                    '("mirror")
-                    '())])])
+               [KEYWORDS (architectures)])])
     (new package%
          [CATEGORY (package-category)]
          [PN       (make-valid-name main-name)]
@@ -176,10 +171,6 @@
               (make-valid-description name (hash-ref data 'description ""))]
              [HOMEPAGE ""]  ; ebuild-gh class will set this
              [LICENSE license]
-             [RESTRICT
-              (if (equal? license "all-rights-reserved")
-                  '("mirror")
-                  '())]
              [RACKET_DEPEND (hash-ref data 'dependencies '())]
              [S
               (cond
