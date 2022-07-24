@@ -85,12 +85,21 @@ The upstream repository can be found on
   --- only create/show the specified package
   }
  @item{
-  @DFlag{package-category} @nonterm{category}
-  --- set the category name to be used for generated packages
-  }
- @item{
   @Flag{d} @nonterm{directory} or @DFlag{directory} @nonterm{directory}
   --- set the directory for @DFlag{create} to a given @nonterm{directory}
+  }
+
+ @item{
+  @Flag{A} @nonterm{keywords} or @DFlag{architectures} @nonterm{keywords}
+  --- architectures keywords (input as one string)
+  }
+ @item{
+  @Flag{L} or @DFlag{license-lookup}
+  --- query package remotes for licenses
+  }
+ @item{
+  @DFlag{package-category} @nonterm{category}
+  --- set the category name to be used for generated packages
   }
 
  @item{
