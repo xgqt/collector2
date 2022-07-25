@@ -59,17 +59,18 @@
 (define (ebuild-rkt-mixin %)
   (class %
     (init-field [RACKET_DEPEND '()])
-    (super-new
-     [EAPI     8]
-     [inherits '("racket")])
+    (super-new)
     (inherit-field BDEPEND RDEPEND)
+
+    ;; Add "racket" to inherited eclasses
+    (ebuild-concat*! inherits this "racket")
 
     (define/private (unroll-RACKET_DEPEND)
       (sort (map racket-pkg->pms-pkg RACKET_DEPEND) string<=?))
 
     (when (not (null? RACKET_DEPEND))
       (set! RDEPEND (unroll-RACKET_DEPEND))
-      (set! BDEPEND '("${RDEPEND}")))))
+      (ebuild-concat*! BDEPEND this "${RDEPEND}"))))
 
 (define ebuild-rkt%
   (ebuild-rkt-mixin ebuild%))
