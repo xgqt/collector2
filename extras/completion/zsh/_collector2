@@ -1,0 +1,24 @@
+#compdef collector2
+#autoload
+
+local global_opts=(
+    '(--help -h)'{--help,-h}'[Show this help]'
+    '(--only-package)'--only-package'[Only create/show the specified package]:package:'
+    '(--package-category)'--package-category'[Set the category name to be used for generated packages]:category:'
+    '(--verbose-auto-catalog)'--verbose-auto-catalog'[Show if automatically setting the Racket catalogs]'
+    '(--verbose-exclude)'--verbose-exclude'[Show manually excluded packages]'
+    '(--verbose-filter)'--verbose-filter'[Show filtered packages]'
+    '(--verbose-info-lookup)'--verbose-info-lookup'[Show messages of package remotes being queried for "info.rkt" files]'
+    '(-A --architectures)'{-A,--architectures}'[Architectures keywords (input as one string)]:keywords:'
+    '(-C --catalog)'{-C,--catalog}'[Set the current-pkg-catalogs catalog to be examined]:url:'
+    '(-E --soft-exclude)'{-E,--soft-exclude}'[Exclude package from being generated, treat reverse dependencies as though the package did not exist]:package:'
+    '(-L --license-lookup)'{-L,--license-lookup}'[Query package remotes for licenses]'
+    '(-V --version)'{-V,--version}'[Show the version of this program and immediately exit]'
+    '(-c --create)'{-c,--create}'[Create ebuilds in a directory specified by "directory" option]'
+    '(-d --directory)'{-d,--directory}'[Set the directory for "create" option]:directory:'
+    '(-e --hard-exclude)'{-e,--hard-exclude}'[Exclude package and all packages depending on it from being generated]:package:'
+    '(-s --show)'{-s,--show}'[Dump ebuilds to standard out, do not write to disk]'
+    '(-v --verbose)'{-v,--verbose}'[Increase verbosity (enable other verbosity switches)]'
+)
+
+_arguments ${global_opts[@]}
