@@ -2,7 +2,7 @@
 #autoload
 
 local global_opts=(
-    '(--help -h)'{--help,-h}'[Show this help]'
+    '(--help -h)'{--help,-h}'[Show usage message and exit]'
     '(--only-package)'--only-package'[Only create/show the specified package]:package:'
     '(--package-category)'--package-category'[Set the category name to be used for generated packages]:category:'
     '(--verbose-auto-catalog)'--verbose-auto-catalog'[Show if automatically setting the Racket catalogs]'
